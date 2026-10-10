@@ -1,0 +1,14 @@
+{"claim": "Drinking hot water kills the coronavirus", "expected": "false", "lang": "en"}
+{"claim": "Eating garlic cures COVID-19", "expected": "false", "lang": "en"}
+{"claim": "5G towers spread COVID-19", "expected": "false", "lang": "en"}
+{"claim": "Vaccines cause autism", "expected": "false", "lang": "en"}
+{"claim": "WhatsApp will start charging users a monthly fee", "expected": "false", "lang": "en"}
+{"claim": "Lemon and baking soda can cure cancer", "expected": "false", "lang": "en"}
+{"claim": "The Great Wall of China is visible from space with the naked eye", "expected": "false", "lang": "en"}
+{"claim": "The Taj Mahal is in Agra", "expected": "true", "lang": "en"}
+{"claim": "New Delhi is the capital of India", "expected": "true", "lang": "en"}
+{"claim": "Chandrayaan-3 landed near the Moon's south polar region in August 2023", "expected": "true", "lang": "en"}
+{"claim": "Water boils at 100 degrees Celsius at sea level", "expected": "true", "lang": "en"}
+{"claim": "गर्म पानी पीने से कोरोना वायरस मर जाता है", "expected": "false", "lang": "hi"}
+{"claim": "ताजमहल आगरा में है", "expected": "true", "lang": "hi"}
+{"claim": "5G टावर से कोरोना फैलता है", "expected": "false", "lang": "hi"}

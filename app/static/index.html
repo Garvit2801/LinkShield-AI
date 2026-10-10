@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LinkShield AI</title>
+<style>
+:root{--bg:#EEF2F8;--panel:#fff;--ink:#14213D;--mute:#5B6B82;--line:#D5DDEA;--true:#0F8B6D;--false:#C8372D;--misleading:#B97A00;--unverifiable:#5B6B82;--accent:#14213D}
+@media(prefers-color-scheme:dark){:root{--bg:#0D1526;--panel:#16223A;--ink:#E8EEF9;--mute:#9AABC4;--line:#2A3A5A;--true:#3DD1A8;--false:#FF7B70;--misleading:#F2B84B;--unverifiable:#9AABC4;--accent:#E8EEF9}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI","Noto Sans Devanagari","Noto Sans",sans-serif}
+main{max-width:720px;margin:0 auto;padding:20px 16px 64px}
+header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+h1{font-size:26px;margin:0;letter-spacing:-.02em}
+.sub{color:var(--mute);margin:0 0 18px}
+select,button,textarea{font:inherit;color:inherit}
+select,.ghost{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:7px 10px;cursor:pointer}
+textarea{width:100%;min-height:120px;border:1px solid var(--line);background:var(--panel);border-radius:14px 14px 4px 14px;padding:14px;resize:vertical}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.row .grow{flex:1}
+.primary{background:var(--accent);color:var(--bg);border:0;border-radius:8px;padding:9px 22px;font-weight:700;cursor:pointer}
+button:disabled{opacity:.5;cursor:wait}
+button:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid var(--misleading);outline-offset:2px}
+.rec{border-color:var(--false);color:var(--false)}
+#attached{color:var(--mute);font-size:14px;margin-top:6px}
+#status{color:var(--mute);margin:14px 0 0;min-height:1.4em}
+.fwd{margin:18px 0 6px;padding:10px 14px;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--mute);border-radius:4px 14px 14px 14px;color:var(--mute);font-size:14px}
+.tactics{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 14px;align-items:center;font-size:14px;color:var(--mute)}
+.chip{border:1px solid var(--line);border-radius:99px;padding:2px 10px;background:var(--panel);color:var(--ink)}
+.claim{background:var(--panel);border:1px solid var(--line);border-radius:4px 16px 16px 16px;padding:16px;margin:12px 0}
+.claim h3{margin:0 0 10px;font-size:17px;font-weight:600}
+.stamp{display:inline-block;border:3px solid var(--c);color:var(--c);font-weight:800;font-size:20px;padding:2px 14px;border-radius:6px;transform:rotate(-3deg);margin-bottom:8px;animation:stamp .35s cubic-bezier(.2,1.6,.4,1) both}
+@keyframes stamp{from{transform:rotate(-12deg) scale(1.9);opacity:0}to{transform:rotate(-3deg) scale(1);opacity:1}}
+@media(prefers-reduced-motion:reduce){.stamp{animation:none}}
+.v-true{--c:var(--true)}.v-false{--c:var(--false)}.v-misleading{--c:var(--misleading)}.v-unverifiable{--c:var(--unverifiable)}
+.conf{height:6px;background:var(--line);border-radius:3px;margin:6px 0 4px;max-width:240px}
+.conf i{display:block;height:100%;background:var(--c);border-radius:3px}
+.small{font-size:13px;color:var(--mute)}
+.warn{color:var(--misleading);font-size:14px;margin:6px 0}
+.src{margin:8px 0 0;padding-left:18px;font-size:14px}
+.src a{color:var(--ink)}
+section.tr{margin-top:36px;border-top:1px solid var(--line);padding-top:16px}
+section.tr h2{font-size:17px;margin:0 0 8px}
+.tr li{margin:4px 0}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--c);margin-right:8px}
+</style>
+</head>
+<body>
+<main>
+<header><h1>LinkShield AI</h1><select id="ui" aria-label="Interface language"><option value="en">English</option><option value="hi">हिन्दी</option></select></header>
+<p class="sub" id="sub"></p>
+<textarea id="text" aria-label="Message"></textarea>
+<div class="row">
+  <button class="ghost" id="attachBtn"></button>
+  <input type="file" id="file" accept="image/*,audio/*" hidden>
+  <button class="ghost" id="mic"></button>
+  <select id="lang" aria-label="Answer language">
+    <option value="">Auto</option><option value="hi">हिन्दी</option><option value="en">English</option><option value="bn">বাংলা</option><option value="ta">தமிழ்</option><option value="te">తెలుగు</option><option value="mr">मराठी</option><option value="gu">ગુજરાતી</option><option value="kn">ಕನ್ನಡ</option><option value="ml">മലയാളം</option><option value="pa">ਪੰਜਾਬੀ</option><option value="ur">اردو</option>
+  </select>
+  <span class="grow"></span>
+  <button class="primary" id="go"></button>
+</div>
+<div id="attached"></div>
+<p id="status" role="status" aria-live="polite"></p>
+<div id="out"></div>
+<section class="tr"><h2 id="trT"></h2><ul id="trends" style="list-style:none;padding:0;margin:0"></ul></section>
+</main>
+<script>
+const $=s=>document.querySelector(s);
+const I={en:{sub:"Paste a forward. Know if the link is a scam and the claim is true.",ph:"Paste a WhatsApp forward, message or link",check:"Check claims",attach:"Attach screenshot or audio",voice:"Record voice note",stop:"Stop recording",listen:"Listen",share:"Share on WhatsApp",sources:"Sources",trends:"Most-checked claims this week",tactics:"Pressure tactics in this message",ungrounded:"No sources found. Treat this with caution.",checking:"Checking claims…",empty:"Add text, a link, a screenshot or a voice note.",none:"No checkable claims found in this message.",conf:"Confidence",nothing:"No checks yet.",read:"Message as read:",links:"Link check",r_safe:"Looks safe",r_suspicious:"Suspicious",r_dangerous:"Dangerous",wr:"Flagged by Google Web Risk",redirects:"Redirects",score:"Risk score",warn:"Warn others"},
+hi:{sub:"फ़ॉरवर्ड पेस्ट करें। जानें कि लिंक स्कैम है या नहीं, और दावा सच है या नहीं।",ph:"WhatsApp फ़ॉरवर्ड, संदेश या लिंक पेस्ट करें",check:"दावे जाँचें",attach:"स्क्रीनशॉट या ऑडियो जोड़ें",voice:"वॉइस नोट रिकॉर्ड करें",stop:"रिकॉर्डिंग रोकें",listen:"सुनें",share:"WhatsApp पर भेजें",sources:"स्रोत",trends:"इस हफ़्ते सबसे ज़्यादा जाँचे गए दावे",tactics:"इस संदेश में दबाव बनाने के तरीके",ungrounded:"कोई स्रोत नहीं मिला। सावधानी रखें।",checking:"दावों की जाँच हो रही है…",empty:"टेक्स्ट, लिंक, स्क्रीनशॉट या वॉइस नोट जोड़ें।",none:"इस संदेश में जाँचने लायक कोई दावा नहीं मिला।",conf:"भरोसा",nothing:"अभी कोई जाँच नहीं।",read:"संदेश जैसा पढ़ा गया:",links:"लिंक की जाँच",r_safe:"सुरक्षित लगता है",r_suspicious:"संदिग्ध",r_dangerous:"ख़तरनाक",wr:"Google Web Risk ने चिह्नित किया",redirects:"रीडायरेक्ट",score:"जोखिम स्कोर",warn:"दूसरों को चेताएँ"}};
+const TAC={en:{fear:"Fear",urgency:"Urgency",fake_authority:"Fake authority",forward_chain:"“Forward this” chain",miracle_cure:"Miracle cure",emotional_bait:"Emotional bait",us_vs_them:"Us vs them"},hi:{fear:"डर",urgency:"जल्दबाज़ी",fake_authority:"झूठा अधिकार",forward_chain:"“आगे भेजो” दबाव",miracle_cure:"चमत्कारी इलाज",emotional_bait:"भावनात्मक जाल",us_vs_them:"हम बनाम वे"}};
+const EMO={true:"✅",false:"❌",misleading:"⚠️",unverifiable:"❔"};
+let ui="en",file=null,audio=null,rec=null;
+const t=k=>I[ui][k];
+function el(tag,cls,txt){const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e}
+function applyUI(){document.documentElement.lang=ui;$("#sub").textContent=t("sub");$("#text").placeholder=t("ph");$("#go").textContent=t("check");$("#attachBtn").textContent=t("attach");$("#mic").textContent=rec&&rec.state==="recording"?t("stop"):t("voice");$("#trT").textContent=t("trends");loadTrends()}
+$("#ui").onchange=e=>{ui=e.target.value;applyUI()};
+$("#attachBtn").onclick=()=>$("#file").click();
+$("#file").onchange=e=>{const f=e.target.files[0];if(!f)return;if(f.type.startsWith("audio/")){audio=f;file=null}else{file=f;audio=null}$("#attached").textContent="📎 "+f.name};
+$("#mic").onclick=async()=>{
+  if(rec&&rec.state==="recording"){rec.stop();return}
+  try{const s=await navigator.mediaDevices.getUserMedia({audio:true});const ch=[];rec=new MediaRecorder(s);
+  rec.ondataavailable=e=>ch.push(e.data);
+  rec.onstop=()=>{audio=new Blob(ch,{type:rec.mimeType});file=null;s.getTracks().forEach(x=>x.stop());$("#mic").classList.remove("rec");$("#attached").textContent="🎤 voice note";applyUI()};
+  rec.start();$("#mic").classList.add("rec");applyUI()}catch(e){$("#status").textContent="Microphone access was blocked."}};
+$("#go").onclick=async()=>{
+  const text=$("#text").value.trim();
+  if(!text&&!file&&!audio){$("#status").textContent=t("empty");return}
+  const fd=new FormData();
+  if(/^https?:\/\/\S+$/.test(text))fd.append("url",text);else fd.append("text",text);
+  if($("#lang").value)fd.append("language",$("#lang").value);
+  if(file)fd.append("image",file);
+  if(audio)fd.append("audio",audio,"voice");
+  $("#go").disabled=true;$("#status").textContent=t("checking");$("#out").replaceChildren();
+  try{const r=await fetch("/api/check",{method:"POST",body:fd});
+    if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.detail||"Something went wrong.")}
+    render(await r.json());$("#status").textContent="";loadTrends()}
+  catch(e){$("#status").textContent=e.message}finally{$("#go").disabled=false}};
+const defang=u=>u.replace(/^https?:\/\//,"").replace(/\./g,"[.]");
+function renderLinks(d,o){
+  const L=d.links||[];if(!L.length)return;
+  o.append(el("div","small",t("links")));
+  L.forEach(l=>{
+    const cls={safe:"v-true",suspicious:"v-misleading",dangerous:"v-false"}[l.risk]||"v-unverifiable";
+    const box=el("article","claim "+cls);
+    box.append(el("div","stamp",t("r_"+l.risk)));
+    box.append(el("h3",null,defang(l.final_url||l.url)));
+    box.append(el("p",null,l.explanation));
+    if(l.reasons.length){const ul=el("ul","src");l.reasons.forEach(r=>ul.append(el("li",null,r)));box.append(ul)}
+    if(l.advice)box.append(el("p",null,"👉 "+l.advice));
+    const bar=el("div","conf");const i=el("i");i.style.width=l.score+"%";bar.append(i);box.append(bar);
+    box.append(el("div","small",t("score")+": "+l.score+"/100"+(l.chain_len>1?" · "+t("redirects")+": "+(l.chain_len-1):"")));
+    if(l.web_risk.threats.length)box.append(el("p","warn","🚨 "+t("wr")));
+    const row=el("div","row");
+    const S=el("button","ghost","↗ "+t("warn"));S.onclick=()=>{const m=`🚨 ${t("r_"+l.risk)}: ${defang(l.final_url||l.url)}\n\n${l.explanation}\n${l.advice||""}\n\n— LinkShield AI`;window.open("https://wa.me/?text="+encodeURIComponent(m),"_blank","noopener")};
+    row.append(S);box.append(row);o.append(box)})}
+function render(d){
+  const o=$("#out");o.replaceChildren();
+  if(d.transcript){const f=el("div","fwd");f.append(el("strong",null,t("read")+" "),document.createTextNode(d.transcript.slice(0,280)+(d.transcript.length>280?"…":"")));o.append(f)}
+  if(d.tactics.length){const w=el("div","tactics",t("tactics")+":");d.tactics.forEach(k=>w.append(el("span","chip",(TAC[ui][k]||k))));o.append(w)}
+  renderLinks(d,o);if(!d.claims.length){if(!(d.links||[]).length)o.append(el("p","small",t("none")));return}
+  d.claims.forEach(c=>{
+    const box=el("article","claim v-"+c.verdict);
+    box.append(el("div","stamp",c.verdict_label));
+    box.append(el("h3",null,c.claim));
+    box.append(el("p",null,c.explanation));
+    const bar=el("div","conf");const i=el("i");i.style.width=Math.round(c.confidence*100)+"%";bar.append(i);box.append(bar);
+    box.append(el("div","small",t("conf")+": "+Math.round(c.confidence*100)+"%"));
+    if(!c.grounded)box.append(el("p","warn",t("ungrounded")));
+    if(c.sources.length){box.append(el("div","small",t("sources")));const ul=el("ul","src");
+      c.sources.forEach(s=>{const li=el("li");const a=el("a",null,s.title);a.href=s.url;a.target="_blank";a.rel="noopener noreferrer";li.append(a);ul.append(li)});box.append(ul)}
+    const row=el("div","row");
+    const L=el("button","ghost","🔊 "+t("listen"));L.onclick=async()=>{L.disabled=true;try{const r=await fetch("/api/tts",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:c.verdict_label+". "+c.explanation,language:d.output_language})});if(r.ok)new Audio(URL.createObjectURL(await r.blob())).play()}finally{L.disabled=false}};
+    const S=el("button","ghost","↗ "+t("share"));S.onclick=()=>{const m=`${EMO[c.verdict]} ${c.verdict_label}: ${c.claim}\n\n${c.explanation}\n\n— LinkShield AI`;window.open("https://wa.me/?text="+encodeURIComponent(m),"_blank","noopener")};
+    row.append(L,S);box.append(row);o.append(box)})}
+async function loadTrends(){
+  try{const d=await (await fetch("/api/trends")).json();const ul=$("#trends");ul.replaceChildren();
+    if(!d.top_claims.length){ul.append(el("li","small",t("nothing")));return}
+    d.top_claims.forEach(c=>{const li=el("li","v-"+c.verdict);li.append(el("span","dot"),document.createTextNode(c.claim+" "),el("span","small","×"+c.checks));ul.append(li)})}catch(e){}}
+applyUI();
+</script>
+</body>
+</html>
