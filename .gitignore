@@ -3,3 +3,4 @@ __pycache__/
 *.tfstate*
 .terraform/
 evals/results.json
+.venv/
