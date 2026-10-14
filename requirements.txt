@@ -9,3 +9,4 @@ beautifulsoup4>=4.12
 pydantic>=2.7
 google-auth>=2.30
 requests>=2.32
+google-cloud-firestore>=2.16

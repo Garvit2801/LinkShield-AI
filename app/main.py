@@ -1,11 +1,11 @@
-import asyncio, collections, logging, os, time
+import asyncio, collections, logging, time
 from pathlib import Path
 
 from fastapi import BackgroundTasks, Depends, FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel
 
-from . import auth, insights, pipeline
+from . import auth, insights, pipeline, store
 
 log = logging.getLogger("linkshield")
 app = FastAPI(title="LinkShield AI")
@@ -51,10 +51,7 @@ def index():
 
 @app.get("/api/config")
 def api_config():
-    keys = {"apiKey": "FIREBASE_API_KEY", "authDomain": "FIREBASE_AUTH_DOMAIN", "appId": "FIREBASE_APP_ID"}
-    firebase = {k: os.environ.get(v, "") for k, v in keys.items()}
-    firebase["projectId"] = auth.project_id()
-    return {"authRequired": auth.required(), "firebase": firebase}
+    return {"authRequired": auth.required(), "googleClientId": auth.client_id()}
 
 
 @app.get("/api/me")
@@ -89,7 +86,43 @@ async def api_check(request: Request, bg: BackgroundTasks, text: str = Form(""),
         log.exception("check failed")
         raise HTTPException(502, "The checker is busy. Please try again.")
     bg.add_task(insights.log_claims, result["claims"], result["output_language"])
+    if user:
+        preview = text or url or result.get("transcript", "")
+        result["id"] = await asyncio.to_thread(store.save, user["uid"], result, preview)
     return result
+
+
+@app.get("/api/history")
+async def api_history(user: dict | None = Depends(auth.current_user)):
+    if not user:
+        raise HTTPException(401, "Sign in to see your history.")
+    return {"items": await asyncio.to_thread(store.list_items, user["uid"])}
+
+
+@app.get("/api/history/{cid}")
+async def api_history_item(cid: str, user: dict | None = Depends(auth.current_user)):
+    if not user:
+        raise HTTPException(401, "Sign in to see your history.")
+    item = await asyncio.to_thread(store.get, user["uid"], cid)
+    if not item:
+        raise HTTPException(404, "Not found.")
+    return item
+
+
+@app.delete("/api/history/{cid}")
+async def api_history_delete(cid: str, user: dict | None = Depends(auth.current_user)):
+    if not user:
+        raise HTTPException(401, "Sign in first.")
+    await asyncio.to_thread(store.delete, user["uid"], cid)
+    return {"ok": True}
+
+
+@app.delete("/api/history")
+async def api_history_clear(user: dict | None = Depends(auth.current_user)):
+    if not user:
+        raise HTTPException(401, "Sign in first.")
+    await asyncio.to_thread(store.delete_all, user["uid"])
+    return {"ok": True}
 
 
 class TTSReq(BaseModel):

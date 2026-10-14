@@ -14,12 +14,14 @@ def fake_verify(token):
 
 def test_me_requires_login(monkeypatch):
     monkeypatch.setattr(auth, "verify", fake_verify)
+    monkeypatch.setattr(auth, "client_id", lambda: "cid")
     assert client.get("/api/me").status_code == 401
     assert client.get("/api/me", headers={"Authorization": "Bearer good"}).json()["uid"] == "u1"
 
 
 def test_bad_token_rejected_even_when_optional(monkeypatch):
     monkeypatch.setattr(auth, "verify", fake_verify)
+    monkeypatch.setattr(auth, "client_id", lambda: "cid")
     r = client.post("/api/check", data={"text": "hi"}, headers={"Authorization": "Bearer nope"})
     assert r.status_code == 401
 

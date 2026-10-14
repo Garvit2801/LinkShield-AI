@@ -1,4 +1,4 @@
-"""Firebase ID-token auth. Anonymous use stays allowed unless AUTH_REQUIRED=1."""
+"""Google Sign-In ID-token auth. Anonymous use stays allowed unless AUTH_REQUIRED=1."""
 import os
 
 from fastapi import HTTPException, Request
@@ -12,16 +12,16 @@ def required() -> bool:
     return os.environ.get("AUTH_REQUIRED", "0") == "1"
 
 
-def project_id() -> str:
-    return os.environ.get("FIREBASE_PROJECT_ID") or os.environ.get("GOOGLE_CLOUD_PROJECT", "")
+def client_id() -> str:
+    return os.environ.get("GOOGLE_CLIENT_ID", "")
 
 
 def verify(token: str) -> dict:
-    claims = id_token.verify_firebase_token(token, _transport, audience=project_id())
-    if not claims or not claims.get("sub"):
+    claims = id_token.verify_oauth2_token(token, _transport, audience=client_id())
+    if not claims.get("sub") or not claims.get("email_verified", False):
         raise ValueError("invalid token")
     return {"uid": claims["sub"], "email": claims.get("email"), "name": claims.get("name"),
-            "phone": claims.get("phone_number"), "picture": claims.get("picture")}
+            "picture": claims.get("picture")}
 
 
 def current_user(request: Request) -> dict | None:
