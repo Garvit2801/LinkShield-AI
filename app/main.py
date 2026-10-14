@@ -1,11 +1,11 @@
-import asyncio, collections, logging, time
+import asyncio, collections, logging, os, time
 from pathlib import Path
 
-from fastapi import BackgroundTasks, FastAPI, File, Form, HTTPException, Request, UploadFile
+from fastapi import BackgroundTasks, Depends, FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import FileResponse, Response
 from pydantic import BaseModel
 
-from . import insights, pipeline
+from . import auth, insights, pipeline
 
 log = logging.getLogger("linkshield")
 app = FastAPI(title="LinkShield AI")
@@ -49,12 +49,27 @@ def index():
     return FileResponse(STATIC / "index.html")
 
 
+@app.get("/api/config")
+def api_config():
+    keys = {"apiKey": "FIREBASE_API_KEY", "authDomain": "FIREBASE_AUTH_DOMAIN", "appId": "FIREBASE_APP_ID"}
+    firebase = {k: os.environ.get(v, "") for k, v in keys.items()}
+    firebase["projectId"] = auth.project_id()
+    return {"authRequired": auth.required(), "firebase": firebase}
+
+
+@app.get("/api/me")
+def api_me(user: dict | None = Depends(auth.current_user)):
+    if not user:
+        raise HTTPException(401, "Not signed in.")
+    return user
+
+
 @app.post("/api/check")
 async def api_check(request: Request, bg: BackgroundTasks, text: str = Form(""), url: str = Form(""),
                     language: str = Form(""), image: UploadFile | None = File(None),
-                    audio: UploadFile | None = File(None)):
+                    audio: UploadFile | None = File(None), user: dict | None = Depends(auth.current_user)):
     ip = (request.headers.get("x-forwarded-for") or (request.client.host if request.client else "?")).split(",")[0].strip()
-    if limited(ip):
+    if limited(f"uid:{user['uid']}" if user else ip):
         raise HTTPException(429, "Too many checks. Try again in a few minutes.")
     img = aud = None
     if image:
