@@ -6,6 +6,10 @@
 <title>LinkShield AI</title>
 <style>
 .acct{display:flex;gap:8px;align-items:center}
+.trace{background:var(--bg);border-radius:10px;padding:8px 12px;margin:10px 0}
+.tr-line{font-size:14px;margin:2px 0}.tr-line.ok{color:var(--true);font-weight:600}
+.kind{font-size:11px;font-weight:700;border-radius:4px;padding:1px 6px;border:1px solid var(--line);text-transform:uppercase;letter-spacing:.03em}
+.k-factcheck{color:var(--true);border-color:var(--true)}.k-official{color:var(--misleading);border-color:var(--misleading)}
 .acct img{width:28px;height:28px;border-radius:50%}
 .sum{border:2px solid var(--c);border-radius:4px 16px 16px 16px;padding:16px;margin:14px 0;background:var(--panel)}
 .sum h2{margin:0 0 6px;font-size:19px;color:var(--c)}
@@ -115,11 +119,15 @@ const defang=u=>u.replace(/^https?:\/\//,"").replace(/\./g,"[.]");
 Object.assign(I.en,{signin:"Sign in",signout:"Sign out",gate:"Sign in with Google to check messages and keep your history.",history:"Your recent checks",clear:"Clear history",
  lv_danger:"Dangerous: do not act on this",lv_warning:"Be careful",lv_unclear:"Could not confirm",lv_safe:"Looks safe",
  a_dont_click:"Do not click these links",a_dont_share:"Do not forward this message",a_warn_others:"Warn the people who sent it to you",a_report_cybercrime:"Report it at cybercrime.gov.in or call 1930",a_report_sender:"Block and report the sender on WhatsApp",a_check_official:"Check with the company or office on its official website or number",a_verify_source:"Look for a trusted news source before believing it",a_safe_to_ignore:"No action needed",
- c_false:"false",c_misleading:"misleading",c_unverifiable:"unverified",c_true:"true",c_links:"risky links",expired:"Your session expired. Please sign in again."});
+ c_false:"false",c_misleading:"misleading",c_unverifiable:"unverified",c_true:"true",c_links:"risky links",expired:"Your session expired. Please sign in again.",
+ a_read_fact_check:"Read the fact-check below before deciding",tr_checked:"Fact-checked by",tr_none:"No fact-checker has covered this yet",tr_origin:"Where it started",tr_contra:"sources contradict it",tr_support:"sources support it",
+ k_factcheck:"Fact-check",k_official:"Official",k_news:"News",k_other:"Other",st_contra:"contradicts",st_support:"supports"});
 Object.assign(I.hi,{signin:"साइन इन",signout:"साइन आउट",gate:"संदेश जाँचने और इतिहास रखने के लिए Google से साइन इन करें।",history:"आपकी हाल की जाँचें",clear:"इतिहास मिटाएँ",
  lv_danger:"ख़तरनाक: इस पर कुछ न करें",lv_warning:"सावधान रहें",lv_unclear:"पुष्टि नहीं हो सकी",lv_safe:"सुरक्षित लगता है",
  a_dont_click:"इन लिंक पर क्लिक न करें",a_dont_share:"इस संदेश को आगे न भेजें",a_warn_others:"जिन्होंने भेजा उन्हें चेताएँ",a_report_cybercrime:"cybercrime.gov.in पर शिकायत करें या 1930 पर कॉल करें",a_report_sender:"WhatsApp पर भेजने वाले को ब्लॉक और रिपोर्ट करें",a_check_official:"कंपनी या दफ़्तर की आधिकारिक वेबसाइट या नंबर से पुष्टि करें",a_verify_source:"मानने से पहले किसी भरोसेमंद समाचार स्रोत में देखें",a_safe_to_ignore:"कोई कार्रवाई ज़रूरी नहीं",
- c_false:"झूठे",c_misleading:"भ्रामक",c_unverifiable:"अपुष्ट",c_true:"सही",c_links:"जोखिम भरे लिंक",expired:"सत्र समाप्त हो गया। फिर से साइन इन करें।"});
+ c_false:"झूठे",c_misleading:"भ्रामक",c_unverifiable:"अपुष्ट",c_true:"सही",c_links:"जोखिम भरे लिंक",expired:"सत्र समाप्त हो गया। फिर से साइन इन करें।",
+ a_read_fact_check:"फ़ैसला करने से पहले नीचे दी गई फ़ैक्ट-चेक पढ़ें",tr_checked:"फ़ैक्ट-चेक किया",tr_none:"अभी किसी फ़ैक्ट-चेकर ने इसे नहीं जाँचा",tr_origin:"कहाँ से शुरू हुआ",tr_contra:"स्रोत इसके ख़िलाफ़ हैं",tr_support:"स्रोत इसके पक्ष में हैं",
+ k_factcheck:"फ़ैक्ट-चेक",k_official:"सरकारी/आधिकारिक",k_news:"समाचार",k_other:"अन्य",st_contra:"खंडन",st_support:"समर्थन"});
 let cfg={authRequired:false},tok=localStorage.getItem("ls_tok")||"";
 const jwt=s=>{try{return JSON.parse(atob(s.split(".")[1].replace(/-/g,"+").replace(/_/g,"/")))}catch(e){return null}};
 const me=()=>{const p=tok&&jwt(tok);return p&&p.exp*1000>Date.now()?p:null};
@@ -139,6 +147,25 @@ function renderAcct(){
 async function initAuth(){
   try{cfg=await (await fetch("/api/config")).json()}catch(e){}
   gateCheck();renderAcct();loadHistory()}
+function renderTrace(c,box){
+  if(!c.sources||!c.sources.length)return;
+  const tr=c.trace||{};
+  const head=el("div","trace");
+  if(tr.fact_checked)head.append(el("div","tr-line ok","✔ "+t("tr_checked")+": "+tr.fact_checkers.join(", ")));
+  else head.append(el("div","tr-line","ℹ "+t("tr_none")));
+  if(tr.origin)head.append(el("div","tr-line","📍 "+t("tr_origin")+": "+tr.origin));
+  const n=[];if(tr.contradicting)n.push(tr.contradicting+" "+t("tr_contra"));if(tr.supporting)n.push(tr.supporting+" "+t("tr_support"));
+  if(n.length)head.append(el("div","small",n.join(" · ")));
+  box.append(head,el("div","small",t("sources")));
+  const ul=el("ul","src");
+  c.sources.forEach(s=>{
+    const li=el("li");
+    if(s.kind)li.append(el("span","kind k-"+s.kind,t("k_"+s.kind)),document.createTextNode(" "));
+    const a=el("a",null,s.publisher||s.title);a.href=s.url;a.target="_blank";a.rel="noopener noreferrer";li.append(a);
+    if(s.stance&&s.stance!=="neutral")li.append(document.createTextNode(" "),el("span","small",s.stance==="contradicts"?"⛔ "+t("st_contra"):"✅ "+t("st_support")));
+    if(s.published)li.append(el("span","small"," · "+s.published));
+    ul.append(li)});
+  box.append(ul)}
 function renderSummary(d,o){
   const s=d.summary;if(!s)return;
   const box=el("section","sum l-"+s.level);box.append(el("h2",null,t("lv_"+s.level)));
@@ -190,8 +217,7 @@ function render(d){
     const bar=el("div","conf");const i=el("i");i.style.width=Math.round(c.confidence*100)+"%";bar.append(i);box.append(bar);
     box.append(el("div","small",t("conf")+": "+Math.round(c.confidence*100)+"%"));
     if(!c.grounded)box.append(el("p","warn",t("ungrounded")));
-    if(c.sources.length){box.append(el("div","small",t("sources")));const ul=el("ul","src");
-      c.sources.forEach(s=>{const li=el("li");const a=el("a",null,s.title);a.href=s.url;a.target="_blank";a.rel="noopener noreferrer";li.append(a);ul.append(li)});box.append(ul)}
+    renderTrace(c,box);
     const row=el("div","row");
     const L=el("button","ghost","🔊 "+t("listen"));L.onclick=async()=>{L.disabled=true;try{const r=await fetch("/api/tts",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:c.verdict_label+". "+c.explanation,language:d.output_language})});if(r.ok)new Audio(URL.createObjectURL(await r.blob())).play()}finally{L.disabled=false}};
     const S=el("button","ghost","↗ "+t("share"));S.onclick=()=>{const m=`${EMO[c.verdict]} ${c.verdict_label}: ${c.claim}\n\n${c.explanation}\n\n— LinkShield AI`;window.open("https://wa.me/?text="+encodeURIComponent(m),"_blank","noopener")};

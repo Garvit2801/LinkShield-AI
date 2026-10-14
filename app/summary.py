@@ -38,6 +38,8 @@ def build(claims: list, links: list, tactics: list) -> dict:
         add("warn_others", 4)
     if unver_c or mislead_c:
         add("verify_source", 3)
+    if any((c.get("trace") or {}).get("fact_checked") for c in false_c + mislead_c):
+        add("read_fact_check", 3)
     if pressure and (bad_links or sus_links or false_c):
         add("check_official", 3)
     if level == "safe":

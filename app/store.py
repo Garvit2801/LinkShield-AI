@@ -31,7 +31,7 @@ def _record(result: dict, preview: str) -> dict:
         "preview": preview[:200],
         "output_language": result.get("output_language"),
         "summary": result.get("summary"),
-        "claims": [{k: c.get(k) for k in ("claim", "verdict", "verdict_label", "confidence", "explanation", "sources", "grounded")}
+        "claims": [{k: c.get(k) for k in ("claim", "verdict", "verdict_label", "confidence", "explanation", "sources", "trace", "grounded")}
                    for c in result.get("claims", [])],
         "links": [{k: l.get(k) for k in ("url", "final_url", "risk", "score", "explanation", "advice", "reasons")}
                   for l in result.get("links", [])],
