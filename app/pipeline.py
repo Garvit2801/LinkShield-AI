@@ -6,7 +6,7 @@ from google import genai
 from google.genai import types
 from pydantic import BaseModel
 
-from . import links, summary
+from . import links, summary, tracing
 
 MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 MAX_CLAIMS = 3
@@ -21,11 +21,19 @@ class Extracted(BaseModel):
     tactics: list[Tactic]
 
 
+class SourceNote(BaseModel):
+    index: int  # 1-based position in the numbered source list
+    stance: Literal["supports", "contradicts", "neutral"]
+    published: str | None = None
+
+
 class Judged(BaseModel):
     verdict: Literal["true", "false", "misleading", "unverifiable"]
     confidence: float
     verdict_label: str
     explanation: str
+    source_notes: list[SourceNote] = []
+    origin: str | None = None
 
 
 _client = None
@@ -97,23 +105,31 @@ async def research(claim: str):
         w = getattr(ch, "web", None)
         if w and w.uri and w.uri not in seen:
             seen.add(w.uri)
-            sources.append({"title": w.title or w.uri, "url": w.uri})
+            sources.append({"title": w.title or w.uri, "url": w.uri, "domain": getattr(w, "domain", None)})
     return (r.text or ""), sources[:5]
 
 
 async def judge(claim: str, notes: str, sources: list, lang: str) -> Judged:
+    listing = "\n".join(f"{i}. {s.get('domain') or s['title']}" for i, s in enumerate(sources, 1)) or "(none)"
     prompt = f"""Claim: {claim}
 
 Research notes (from web search):
 {notes}
 
-Sources found: {len(sources)}
+Sources found ({len(sources)}), numbered:
+{listing}
 
 Decide the verdict using ONLY the research notes. 'true' only if credible sources clearly confirm it;
 'false' only if clearly contradicted; 'misleading' if partly true or missing key context;
 'unverifiable' if evidence is absent, weak or conflicting. Never guess. Confidence (0 to 1) must reflect evidence strength.
 Write verdict_label (2-3 words) and explanation (2-3 simple sentences for a non-expert, no jargon)
-in the language with ISO code '{lang}'."""
+in the language with ISO code '{lang}'.
+
+Also fill source_notes: for each numbered source the notes clearly refer to, give its number as index, a stance
+(supports, contradicts or neutral toward the claim) and published only if the notes state that source's date
+(otherwise null). Set origin to one short sentence in '{lang}' naming where, when or through whom this specific
+claim first appeared, but only if the notes give that specific detail (a platform, person, outlet or date);
+vague statements such as "rumours have circulated for years" are NOT an origin, so use null. Never invent dates, sources or origins."""
     cfg = types.GenerateContentConfig(response_mime_type="application/json", response_schema=Judged, temperature=0)
     r = await client().aio.models.generate_content(model=MODEL, contents=prompt, config=cfg)
     return r.parsed
@@ -131,10 +147,11 @@ async def check_claim(claim: str, lang: str) -> dict:
     conf = max(0.0, min(1.0, j.confidence))
     if not sources:  # no grounding: never present as confident
         conf = min(conf, 0.4)
+    sources = tracing.enrich(sources, j.source_notes)
     res = {
         "claim_id": key[:12], "claim": claim, "verdict": j.verdict, "confidence": round(conf, 2),
         "verdict_label": j.verdict_label, "explanation": j.explanation, "sources": sources,
-        "grounded": bool(sources), "cached": False,
+        "trace": tracing.build(sources, j.origin), "grounded": bool(sources), "cached": False,
     }
     _cache[key] = res
     return res
