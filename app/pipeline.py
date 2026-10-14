@@ -6,7 +6,7 @@ from google import genai
 from google.genai import types
 from pydantic import BaseModel
 
-from . import links
+from . import links, summary
 
 MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
 MAX_CLAIMS = 3
@@ -164,8 +164,10 @@ async def check(text="", url="", lang="", image=None, audio=None) -> dict:
         asyncio.gather(*[check_claim(c, out_lang) for c in ex.claims[:MAX_CLAIMS]]),
         links.analyze_all(urls, out_lang),
     )
+    results = list(results)
     return {
         "input_language": ex.input_language, "output_language": out_lang,
-        "transcript": ex.transcript[:1500], "tactics": ex.tactics, "claims": list(results), "links": link_results,
+        "transcript": ex.transcript[:1500], "tactics": ex.tactics, "claims": results, "links": link_results,
+        "summary": summary.build(results, link_results, ex.tactics),
         "latency_ms": int((time.time() - t0) * 1000),
     }

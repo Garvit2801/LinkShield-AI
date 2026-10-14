@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LinkShield AI: sign in</title>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+:root{--bg:#EEF2F8;--panel:#fff;--ink:#14213D;--mute:#5B6B82;--line:#D5DDEA;--ok:#0F8B6D;--bad:#C8372D;--warn:#B97A00;--accent:#14213D}
+@media(prefers-color-scheme:dark){:root{--bg:#0D1526;--panel:#16223A;--ink:#E8EEF9;--mute:#9AABC4;--line:#2A3A5A;--ok:#3DD1A8;--bad:#FF7B70;--warn:#F2B84B;--accent:#E8EEF9}}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:flex;flex-direction:column;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI","Noto Sans Devanagari","Noto Sans",sans-serif}
+.top{display:flex;justify-content:flex-end;padding:16px}
+select{font:inherit;color:inherit;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:7px 10px;cursor:pointer}
+.wrap{flex:1;display:grid;place-items:center;padding:16px}
+.card{width:100%;max-width:440px;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:36px 28px;text-align:center;box-shadow:0 10px 40px rgba(20,33,61,.08)}
+.logo{font-size:44px;line-height:1}
+h1{margin:10px 0 6px;font-size:30px;letter-spacing:-.02em}
+.tag{color:var(--mute);margin:0 0 24px}
+ul{list-style:none;padding:0;margin:0 0 28px;text-align:left}
+li{display:flex;gap:12px;align-items:flex-start;margin:12px 0;font-size:15px}
+li b{display:block}
+li span.i{font-size:22px}
+#btn{display:flex;justify-content:center;min-height:44px}
+#msg{color:var(--bad);min-height:1.4em;margin:12px 0 0;font-size:14px}
+.guest{display:inline-block;margin-top:10px;color:var(--mute);font-size:14px}
+.fine{color:var(--mute);font-size:12px;margin-top:22px}
+a{color:inherit}
+a:focus-visible,select:focus-visible{outline:3px solid var(--warn);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="top"><select id="ui" aria-label="Language"><option value="en">English</option><option value="hi">हिन्दी</option></select></div>
+<div class="wrap">
+  <main class="card">
+    <div class="logo" aria-hidden="true">🛡️</div>
+    <h1>LinkShield AI</h1>
+    <p class="tag" id="tag"></p>
+    <ul>
+      <li><span class="i" aria-hidden="true">🔗</span><div><b id="f1t"></b><span id="f1d"></span></div></li>
+      <li><span class="i" aria-hidden="true">📰</span><div><b id="f2t"></b><span id="f2d"></span></div></li>
+      <li><span class="i" aria-hidden="true">🗂️</span><div><b id="f3t"></b><span id="f3d"></span></div></li>
+    </ul>
+    <div id="btn"></div>
+    <p id="msg" role="status" aria-live="polite"></p>
+    <a class="guest" id="guest" href="/app" hidden></a>
+    <p class="fine" id="fine"></p>
+  </main>
+</div>
+<script>
+const $=s=>document.querySelector(s);
+const T={en:{tag:"Know if a forward is a scam or a lie, before you share it.",f1t:"Link check. ",f1d:"Spots scam and phishing links.",f2t:"Claim check. ",f2d:"Verifies claims against trusted sources.",f3t:"Your history. ",f3d:"Saved only for you. You can delete it any time.",guest:"Continue without signing in",fine:"We only read your name, email and photo to sign you in. Uploaded images and audio are never stored.",err:"Sign-in failed. Please try again.",cfg:"Sign-in is not set up yet."},
+hi:{tag:"फ़ॉरवर्ड स्कैम या झूठ है या नहीं, आगे भेजने से पहले जानें।",f1t:"लिंक जाँच। ",f1d:"स्कैम और फ़िशिंग लिंक पकड़ता है।",f2t:"दावों की जाँच। ",f2d:"भरोसेमंद स्रोतों से दावे परखता है।",f3t:"आपका इतिहास। ",f3d:"सिर्फ़ आपके लिए सहेजा जाता है। कभी भी मिटा सकते हैं।",guest:"बिना साइन इन के जारी रखें",fine:"साइन इन के लिए हम सिर्फ़ आपका नाम, ईमेल और फ़ोटो पढ़ते हैं। अपलोड की गई तस्वीरें और ऑडियो कभी सहेजे नहीं जाते।",err:"साइन इन नहीं हो सका। फिर कोशिश करें।",cfg:"साइन इन अभी सेट नहीं है।"}};
+let ui=(navigator.language||"").startsWith("hi")?"hi":"en",cfg={authRequired:false,googleClientId:""};
+const KEY="ls_tok";
+const jwt=s=>{try{return JSON.parse(atob(s.split(".")[1].replace(/-/g,"+").replace(/_/g,"/")))}catch(e){return null}};
+function valid(){const t=localStorage.getItem(KEY),p=t&&jwt(t);return !!(p&&p.exp*1000>Date.now())}
+function apply(){const t=T[ui];document.documentElement.lang=ui;$("#ui").value=ui;
+  for(const k of ["tag","f1t","f1d","f2t","f2d","f3t","f3d","fine"])$("#"+k).textContent=t[k];$("#guest").textContent=t.guest}
+$("#ui").onchange=e=>{ui=e.target.value;apply()};
+const params=new URLSearchParams(location.search),signedOut=params.has("out");
+function onCred(r){localStorage.setItem(KEY,r.credential);location.replace("/app")}
+function renderBtn(){google.accounts.id.renderButton($("#btn"),{theme:"filled_blue",size:"large",text:"continue_with",shape:"pill",width:300,locale:ui})}
+async function init(){
+  apply();
+  if(!signedOut&&valid()){location.replace("/app");return}
+  if(signedOut)localStorage.removeItem(KEY);
+  try{cfg=await (await fetch("/api/config")).json()}catch(e){}
+  $("#guest").hidden=cfg.authRequired;
+  if(!cfg.googleClientId){$("#msg").textContent=T[ui].cfg;return}
+  const start=()=>{google.accounts.id.initialize({client_id:cfg.googleClientId,callback:onCred,auto_select:!signedOut});
+    if(signedOut)google.accounts.id.disableAutoSelect();renderBtn()};
+  if(window.google&&google.accounts)start();
+  else{const w=setInterval(()=>{if(window.google&&google.accounts){clearInterval(w);start()}},100);setTimeout(()=>{clearInterval(w);if(!(window.google&&google.accounts))$("#msg").textContent=T[ui].err},8000)}}
+init();
+</script>
+</body>
+</html>
