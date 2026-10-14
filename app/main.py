@@ -46,6 +46,11 @@ def healthz():
 
 @app.get("/")
 def index():
+    return FileResponse(STATIC / "login.html")
+
+
+@app.get("/app")
+def checker():
     return FileResponse(STATIC / "index.html")
 
 

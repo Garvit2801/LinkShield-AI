@@ -35,3 +35,8 @@ def test_anonymous_allowed_by_default(monkeypatch):
     monkeypatch.delenv("AUTH_REQUIRED", raising=False)
     assert client.get("/healthz").status_code == 200
     assert client.get("/api/config").json()["authRequired"] is False
+
+
+def test_login_page_at_root_and_checker_at_app():
+    assert "continue_with" in client.get("/").text
+    assert 'id="go"' in client.get("/app").text
