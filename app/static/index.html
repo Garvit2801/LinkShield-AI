@@ -211,5 +211,6 @@ async function loadTrends(){
     if(!d.top_claims.length){ul.append(el("li","small",t("nothing")));return}
     d.top_claims.forEach(c=>{const li=el("li","v-"+c.verdict);li.append(el("span","dot"),document.createTextNode(c.claim+" "),el("span","small","×"+c.checks));ul.append(li)})}catch(e){}}
 applyUI();initAuth();
+</script>
 </body>
 </html>
