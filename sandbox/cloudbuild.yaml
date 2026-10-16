@@ -1,0 +1,6 @@
+# Builds the sandbox worker image. Run from the repository root:
+#   gcloud builds submit --config sandbox/cloudbuild.yaml --substitutions _IMAGE=<region>-docker.pkg.dev/<project>/linkshield/sandbox:<tag> .
+steps:
+  - name: gcr.io/cloud-builders/docker
+    args: ["build", "-f", "sandbox/Dockerfile", "-t", "$_IMAGE", "."]
+images: ["$_IMAGE"]

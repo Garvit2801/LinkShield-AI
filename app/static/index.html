@@ -1,232 +1,230 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>LinkShield AI</title>
-<style>
-.acct{display:flex;gap:8px;align-items:center}
-.trace{background:var(--bg);border-radius:10px;padding:8px 12px;margin:10px 0}
-.tr-line{font-size:14px;margin:2px 0}.tr-line.ok{color:var(--true);font-weight:600}
-.kind{font-size:11px;font-weight:700;border-radius:4px;padding:1px 6px;border:1px solid var(--line);text-transform:uppercase;letter-spacing:.03em}
-.k-factcheck{color:var(--true);border-color:var(--true)}.k-official{color:var(--misleading);border-color:var(--misleading)}
-.acct img{width:28px;height:28px;border-radius:50%}
-.sum{border:2px solid var(--c);border-radius:4px 16px 16px 16px;padding:16px;margin:14px 0;background:var(--panel)}
-.sum h2{margin:0 0 6px;font-size:19px;color:var(--c)}
-.sum ul{margin:8px 0 0;padding-left:20px}
-.sum li{margin:6px 0}
-.sum a{color:var(--ink)}
-.l-danger{--c:var(--false)}.l-warning{--c:var(--misleading)}.l-unclear{--c:var(--unverifiable)}.l-safe{--c:var(--true)}
-#gate{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:24px;text-align:center;margin:20px 0}
-#hist li{display:flex;gap:8px;align-items:center;margin:6px 0;cursor:pointer}
-#hist .x{margin-left:auto}
-:root{--bg:#EEF2F8;--panel:#fff;--ink:#14213D;--mute:#5B6B82;--line:#D5DDEA;--true:#0F8B6D;--false:#C8372D;--misleading:#B97A00;--unverifiable:#5B6B82;--accent:#14213D}
-@media(prefers-color-scheme:dark){:root{--bg:#0D1526;--panel:#16223A;--ink:#E8EEF9;--mute:#9AABC4;--line:#2A3A5A;--true:#3DD1A8;--false:#FF7B70;--misleading:#F2B84B;--unverifiable:#9AABC4;--accent:#E8EEF9}}
-*{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI","Noto Sans Devanagari","Noto Sans",sans-serif}
-main{max-width:720px;margin:0 auto;padding:20px 16px 64px}
-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-h1{font-size:26px;margin:0;letter-spacing:-.02em}
-.sub{color:var(--mute);margin:0 0 18px}
-select,button,textarea{font:inherit;color:inherit}
-select,.ghost{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:7px 10px;cursor:pointer}
-textarea{width:100%;min-height:120px;border:1px solid var(--line);background:var(--panel);border-radius:14px 14px 4px 14px;padding:14px;resize:vertical}
-.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;align-items:center}
-.row .grow{flex:1}
-.primary{background:var(--accent);color:var(--bg);border:0;border-radius:8px;padding:9px 22px;font-weight:700;cursor:pointer}
-button:disabled{opacity:.5;cursor:wait}
-button:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid var(--misleading);outline-offset:2px}
-.rec{border-color:var(--false);color:var(--false)}
-#attached{color:var(--mute);font-size:14px;margin-top:6px}
-#status{color:var(--mute);margin:14px 0 0;min-height:1.4em}
-.fwd{margin:18px 0 6px;padding:10px 14px;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--mute);border-radius:4px 14px 14px 14px;color:var(--mute);font-size:14px}
-.tactics{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 14px;align-items:center;font-size:14px;color:var(--mute)}
-.chip{border:1px solid var(--line);border-radius:99px;padding:2px 10px;background:var(--panel);color:var(--ink)}
-.claim{background:var(--panel);border:1px solid var(--line);border-radius:4px 16px 16px 16px;padding:16px;margin:12px 0}
-.claim h3{margin:0 0 10px;font-size:17px;font-weight:600}
-.stamp{display:inline-block;border:3px solid var(--c);color:var(--c);font-weight:800;font-size:20px;padding:2px 14px;border-radius:6px;transform:rotate(-3deg);margin-bottom:8px;animation:stamp .35s cubic-bezier(.2,1.6,.4,1) both}
-@keyframes stamp{from{transform:rotate(-12deg) scale(1.9);opacity:0}to{transform:rotate(-3deg) scale(1);opacity:1}}
-@media(prefers-reduced-motion:reduce){.stamp{animation:none}}
-.v-true{--c:var(--true)}.v-false{--c:var(--false)}.v-misleading{--c:var(--misleading)}.v-unverifiable{--c:var(--unverifiable)}
-.conf{height:6px;background:var(--line);border-radius:3px;margin:6px 0 4px;max-width:240px}
-.conf i{display:block;height:100%;background:var(--c);border-radius:3px}
-.small{font-size:13px;color:var(--mute)}
-.warn{color:var(--misleading);font-size:14px;margin:6px 0}
-.src{margin:8px 0 0;padding-left:18px;font-size:14px}
-.src a{color:var(--ink)}
-section.tr{margin-top:36px;border-top:1px solid var(--line);padding-top:16px}
-section.tr h2{font-size:17px;margin:0 0 8px}
-.tr li{margin:4px 0}
-.dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--c);margin-right:8px}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#f1faf3" />
+  <meta name="color-scheme" content="only light" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="/assets/icon-192.png" />
+  <meta name="description" content="LinkShield AI is a second opinion on anything you were sent. Links, files, screenshots, voice notes and forwarded messages are checked before you open them." />
+  <title>LinkShield AI · Check it before you open it</title>
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" />
+  <script>document.documentElement.classList.add('js');</script>
+  <link rel="stylesheet" href="/assets/app.css" />
+  <script type="module" src="/assets/app.js"></script>
 </head>
 <body>
-<main>
-<header><h1>LinkShield AI</h1><div class="acct"><div id="acct"></div><select id="ui" aria-label="Interface language"><option value="en">English</option><option value="hi">हिन्दी</option></select></div></header>
-<p class="sub" id="sub"></p>
-<div id="app">
-<textarea id="text" aria-label="Message"></textarea>
-<div class="row">
-  <button class="ghost" id="attachBtn"></button>
-  <input type="file" id="file" accept="image/*,audio/*" hidden>
-  <button class="ghost" id="mic"></button>
-  <select id="lang" aria-label="Answer language">
-    <option value="">Auto</option><option value="hi">हिन्दी</option><option value="en">English</option><option value="bn">বাংলা</option><option value="ta">தமிழ்</option><option value="te">తెలుగు</option><option value="mr">मराठी</option><option value="gu">ગુજરાતી</option><option value="kn">ಕನ್ನಡ</option><option value="ml">മലയാളം</option><option value="pa">ਪੰਜਾਬੀ</option><option value="ur">اردو</option>
-  </select>
-  <span class="grow"></span>
-  <button class="primary" id="go"></button>
-</div>
-<div id="attached"></div>
-<p id="status" role="status" aria-live="polite"></p>
-<div id="out"></div>
-<section class="tr" id="histBox" hidden><h2 id="histT"></h2><ul id="hist" style="list-style:none;padding:0;margin:0"></ul><button class="ghost" id="histClear"></button></section>
-<section class="tr"><h2 id="trT"></h2><ul id="trends" style="list-style:none;padding:0;margin:0"></ul></section>
-</div>
-</main>
-<script>
-const $=s=>document.querySelector(s);
-const I={en:{sub:"Paste a forward. Know if the link is a scam and the claim is true.",ph:"Paste a WhatsApp forward, message or link",check:"Check claims",attach:"Attach screenshot or audio",voice:"Record voice note",stop:"Stop recording",listen:"Listen",share:"Share on WhatsApp",sources:"Sources",trends:"Most-checked claims this week",tactics:"Pressure tactics in this message",ungrounded:"No sources found. Treat this with caution.",checking:"Checking claims…",empty:"Add text, a link, a screenshot or a voice note.",none:"No checkable claims found in this message.",conf:"Confidence",nothing:"No checks yet.",read:"Message as read:",links:"Link check",r_safe:"Looks safe",r_suspicious:"Suspicious",r_dangerous:"Dangerous",wr:"Flagged by Google Web Risk",redirects:"Redirects",score:"Risk score",warn:"Warn others"},
-hi:{sub:"फ़ॉरवर्ड पेस्ट करें। जानें कि लिंक स्कैम है या नहीं, और दावा सच है या नहीं।",ph:"WhatsApp फ़ॉरवर्ड, संदेश या लिंक पेस्ट करें",check:"दावे जाँचें",attach:"स्क्रीनशॉट या ऑडियो जोड़ें",voice:"वॉइस नोट रिकॉर्ड करें",stop:"रिकॉर्डिंग रोकें",listen:"सुनें",share:"WhatsApp पर भेजें",sources:"स्रोत",trends:"इस हफ़्ते सबसे ज़्यादा जाँचे गए दावे",tactics:"इस संदेश में दबाव बनाने के तरीके",ungrounded:"कोई स्रोत नहीं मिला। सावधानी रखें।",checking:"दावों की जाँच हो रही है…",empty:"टेक्स्ट, लिंक, स्क्रीनशॉट या वॉइस नोट जोड़ें।",none:"इस संदेश में जाँचने लायक कोई दावा नहीं मिला।",conf:"भरोसा",nothing:"अभी कोई जाँच नहीं।",read:"संदेश जैसा पढ़ा गया:",links:"लिंक की जाँच",r_safe:"सुरक्षित लगता है",r_suspicious:"संदिग्ध",r_dangerous:"ख़तरनाक",wr:"Google Web Risk ने चिह्नित किया",redirects:"रीडायरेक्ट",score:"जोखिम स्कोर",warn:"दूसरों को चेताएँ"}};
-const TAC={en:{fear:"Fear",urgency:"Urgency",fake_authority:"Fake authority",forward_chain:"“Forward this” chain",miracle_cure:"Miracle cure",emotional_bait:"Emotional bait",us_vs_them:"Us vs them"},hi:{fear:"डर",urgency:"जल्दबाज़ी",fake_authority:"झूठा अधिकार",forward_chain:"“आगे भेजो” दबाव",miracle_cure:"चमत्कारी इलाज",emotional_bait:"भावनात्मक जाल",us_vs_them:"हम बनाम वे"}};
-const EMO={true:"✅",false:"❌",misleading:"⚠️",unverifiable:"❔"};
-let ui="en",file=null,audio=null,rec=null;
-const t=k=>I[ui][k];
-function el(tag,cls,txt){const e=document.createElement(tag);if(cls)e.className=cls;if(txt!=null)e.textContent=txt;return e}
-function applyUI(){document.documentElement.lang=ui;$("#sub").textContent=t("sub");$("#text").placeholder=t("ph");$("#go").textContent=t("check");$("#attachBtn").textContent=t("attach");$("#mic").textContent=rec&&rec.state==="recording"?t("stop"):t("voice");$("#trT").textContent=t("trends");$("#histT").textContent=t("history");$("#histClear").textContent=t("clear");renderAcct();loadTrends();loadHistory()}
-$("#ui").onchange=e=>{ui=e.target.value;applyUI()};
-$("#attachBtn").onclick=()=>$("#file").click();
-$("#file").onchange=e=>{const f=e.target.files[0];if(!f)return;if(f.type.startsWith("audio/")){audio=f;file=null}else{file=f;audio=null}$("#attached").textContent="📎 "+f.name};
-$("#mic").onclick=async()=>{
-  if(rec&&rec.state==="recording"){rec.stop();return}
-  try{const s=await navigator.mediaDevices.getUserMedia({audio:true});const ch=[];rec=new MediaRecorder(s);
-  rec.ondataavailable=e=>ch.push(e.data);
-  rec.onstop=()=>{audio=new Blob(ch,{type:rec.mimeType});file=null;s.getTracks().forEach(x=>x.stop());$("#mic").classList.remove("rec");$("#attached").textContent="🎤 voice note";applyUI()};
-  rec.start();$("#mic").classList.add("rec");applyUI()}catch(e){$("#status").textContent="Microphone access was blocked."}};
-$("#go").onclick=async()=>{
-  const text=$("#text").value.trim();
-  if(!text&&!file&&!audio){$("#status").textContent=t("empty");return}
-  const fd=new FormData();
-  if(/^https?:\/\/\S+$/.test(text))fd.append("url",text);else fd.append("text",text);
-  if($("#lang").value)fd.append("language",$("#lang").value);
-  if(file)fd.append("image",file);
-  if(audio)fd.append("audio",audio,"voice");
-  $("#go").disabled=true;$("#status").textContent=t("checking");$("#out").replaceChildren();
-  try{const r=await api("/api/check",{method:"POST",body:fd});
-    if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e.detail||"Something went wrong.")}
-    render(await r.json());$("#status").textContent="";loadTrends();loadHistory()}
-  catch(e){$("#status").textContent=e.message}finally{$("#go").disabled=false}};
-const defang=u=>u.replace(/^https?:\/\//,"").replace(/\./g,"[.]");
-Object.assign(I.en,{signin:"Sign in",signout:"Sign out",gate:"Sign in with Google to check messages and keep your history.",history:"Your recent checks",clear:"Clear history",
- lv_danger:"Dangerous: do not act on this",lv_warning:"Be careful",lv_unclear:"Could not confirm",lv_safe:"Looks safe",
- a_dont_click:"Do not click these links",a_dont_share:"Do not forward this message",a_warn_others:"Warn the people who sent it to you",a_report_cybercrime:"Report it at cybercrime.gov.in or call 1930",a_report_sender:"Block and report the sender on WhatsApp",a_check_official:"Check with the company or office on its official website or number",a_verify_source:"Look for a trusted news source before believing it",a_safe_to_ignore:"No action needed",
- c_false:"false",c_misleading:"misleading",c_unverifiable:"unverified",c_true:"true",c_links:"risky links",expired:"Your session expired. Please sign in again.",
- a_read_fact_check:"Read the fact-check below before deciding",tr_checked:"Fact-checked by",tr_none:"No fact-checker has covered this yet",tr_origin:"Where it started",tr_contra:"sources contradict it",tr_support:"sources support it",
- k_factcheck:"Fact-check",k_official:"Official",k_news:"News",k_other:"Other",st_contra:"contradicts",st_support:"supports"});
-Object.assign(I.hi,{signin:"साइन इन",signout:"साइन आउट",gate:"संदेश जाँचने और इतिहास रखने के लिए Google से साइन इन करें।",history:"आपकी हाल की जाँचें",clear:"इतिहास मिटाएँ",
- lv_danger:"ख़तरनाक: इस पर कुछ न करें",lv_warning:"सावधान रहें",lv_unclear:"पुष्टि नहीं हो सकी",lv_safe:"सुरक्षित लगता है",
- a_dont_click:"इन लिंक पर क्लिक न करें",a_dont_share:"इस संदेश को आगे न भेजें",a_warn_others:"जिन्होंने भेजा उन्हें चेताएँ",a_report_cybercrime:"cybercrime.gov.in पर शिकायत करें या 1930 पर कॉल करें",a_report_sender:"WhatsApp पर भेजने वाले को ब्लॉक और रिपोर्ट करें",a_check_official:"कंपनी या दफ़्तर की आधिकारिक वेबसाइट या नंबर से पुष्टि करें",a_verify_source:"मानने से पहले किसी भरोसेमंद समाचार स्रोत में देखें",a_safe_to_ignore:"कोई कार्रवाई ज़रूरी नहीं",
- c_false:"झूठे",c_misleading:"भ्रामक",c_unverifiable:"अपुष्ट",c_true:"सही",c_links:"जोखिम भरे लिंक",expired:"सत्र समाप्त हो गया। फिर से साइन इन करें।",
- a_read_fact_check:"फ़ैसला करने से पहले नीचे दी गई फ़ैक्ट-चेक पढ़ें",tr_checked:"फ़ैक्ट-चेक किया",tr_none:"अभी किसी फ़ैक्ट-चेकर ने इसे नहीं जाँचा",tr_origin:"कहाँ से शुरू हुआ",tr_contra:"स्रोत इसके ख़िलाफ़ हैं",tr_support:"स्रोत इसके पक्ष में हैं",
- k_factcheck:"फ़ैक्ट-चेक",k_official:"सरकारी/आधिकारिक",k_news:"समाचार",k_other:"अन्य",st_contra:"खंडन",st_support:"समर्थन"});
-let cfg={authRequired:false},tok=localStorage.getItem("ls_tok")||"";
-const jwt=s=>{try{return JSON.parse(atob(s.split(".")[1].replace(/-/g,"+").replace(/_/g,"/")))}catch(e){return null}};
-const me=()=>{const p=tok&&jwt(tok);return p&&p.exp*1000>Date.now()?p:null};
-async function api(url,opt={}){
-  if(tok&&!me())signOut();
-  opt.headers=Object.assign({},opt.headers,tok?{Authorization:"Bearer "+tok}:{});
-  const r=await fetch(url,opt);
-  if(r.status===401&&tok)signOut();
-  return r}
-function signOut(){tok="";localStorage.removeItem("ls_tok");location.replace("/?out=1")}
-function gateCheck(){if(cfg.authRequired&&!me())location.replace("/")}
-function renderAcct(){
-  const a=$("#acct");a.replaceChildren();const u=me();
-  if(u){if(u.picture){const i=el("img");i.src=u.picture;i.alt="";i.referrerPolicy="no-referrer";a.append(i)}
-    const b=el("button","ghost",t("signout"));b.onclick=signOut;a.append(b)}
-  else{const l=el("a","ghost",t("signin"));l.href="/";l.style.textDecoration="none";a.append(l)}}
-async function initAuth(){
-  try{cfg=await (await fetch("/api/config")).json()}catch(e){}
-  gateCheck();renderAcct();loadHistory()}
-function renderTrace(c,box){
-  if(!c.sources||!c.sources.length)return;
-  const tr=c.trace||{};
-  const head=el("div","trace");
-  if(tr.fact_checked)head.append(el("div","tr-line ok","✔ "+t("tr_checked")+": "+tr.fact_checkers.join(", ")));
-  else head.append(el("div","tr-line","ℹ "+t("tr_none")));
-  if(tr.origin)head.append(el("div","tr-line","📍 "+t("tr_origin")+": "+tr.origin));
-  const n=[];if(tr.contradicting)n.push(tr.contradicting+" "+t("tr_contra"));if(tr.supporting)n.push(tr.supporting+" "+t("tr_support"));
-  if(n.length)head.append(el("div","small",n.join(" · ")));
-  box.append(head,el("div","small",t("sources")));
-  const ul=el("ul","src");
-  c.sources.forEach(s=>{
-    const li=el("li");
-    if(s.kind)li.append(el("span","kind k-"+s.kind,t("k_"+s.kind)),document.createTextNode(" "));
-    const a=el("a",null,s.publisher||s.title);a.href=s.url;a.target="_blank";a.rel="noopener noreferrer";li.append(a);
-    if(s.stance&&s.stance!=="neutral")li.append(document.createTextNode(" "),el("span","small",s.stance==="contradicts"?"⛔ "+t("st_contra"):"✅ "+t("st_support")));
-    if(s.published)li.append(el("span","small"," · "+s.published));
-    ul.append(li)});
-  box.append(ul)}
-function renderSummary(d,o){
-  const s=d.summary;if(!s)return;
-  const box=el("section","sum l-"+s.level);box.append(el("h2",null,t("lv_"+s.level)));
-  const c=s.counts||{},bits=["false","misleading","unverifiable","true"].filter(k=>c[k]).map(k=>c[k]+" "+t("c_"+k));
-  const rl=(c.dangerous_links||0)+(c.suspicious_links||0);if(rl)bits.push(rl+" "+t("c_links"));
-  if(bits.length)box.append(el("div","small",bits.join(" · ")));
-  if(s.actions.length){const ul=el("ul");s.actions.forEach(a=>{
-    const li=el("li");li.append(document.createTextNode(t("a_"+a.type)));
-    if(a.type==="report_cybercrime"){li.append(document.createTextNode(" "));const l=el("a",null,"↗");l.href=a.url;l.target="_blank";l.rel="noopener noreferrer";li.append(l)}
-    ul.append(li)});box.append(ul)}
-  o.append(box)}
-async function loadHistory(){
-  const box=$("#histBox");if(!me()){box.hidden=true;return}
-  try{const r=await api("/api/history");if(!r.ok){box.hidden=true;return}
-    const items=(await r.json()).items,ul=$("#hist");ul.replaceChildren();box.hidden=!items.length;
-    items.forEach(it=>{const li=el("li");const lvl=(it.summary&&it.summary.level)||"unclear";
-      li.append(el("span","chip",t("lv_"+lvl)),el("span",null,it.preview||"…"));
-      li.onclick=()=>{render(it);window.scrollTo({top:0,behavior:"smooth"})};
-      const x=el("button","ghost x","✕");x.setAttribute("aria-label","Delete");x.onclick=async e=>{e.stopPropagation();await api("/api/history/"+it.id,{method:"DELETE"});loadHistory()};
-      li.append(x);ul.append(li)})}catch(e){}}
-$("#histClear").onclick=async()=>{await api("/api/history",{method:"DELETE"});loadHistory()};
-function renderLinks(d,o){
-  const L=d.links||[];if(!L.length)return;
-  o.append(el("div","small",t("links")));
-  L.forEach(l=>{
-    const cls={safe:"v-true",suspicious:"v-misleading",dangerous:"v-false"}[l.risk]||"v-unverifiable";
-    const box=el("article","claim "+cls);
-    box.append(el("div","stamp",t("r_"+l.risk)));
-    box.append(el("h3",null,defang(l.final_url||l.url)));
-    box.append(el("p",null,l.explanation));
-    if(l.reasons.length){const ul=el("ul","src");l.reasons.forEach(r=>ul.append(el("li",null,r)));box.append(ul)}
-    if(l.advice)box.append(el("p",null,"👉 "+l.advice));
-    const bar=el("div","conf");const i=el("i");i.style.width=l.score+"%";bar.append(i);box.append(bar);
-    box.append(el("div","small",t("score")+": "+l.score+"/100"+(l.chain_len>1?" · "+t("redirects")+": "+(l.chain_len-1):"")));
-    if(l.web_risk.threats.length)box.append(el("p","warn","🚨 "+t("wr")));
-    const row=el("div","row");
-    const S=el("button","ghost","↗ "+t("warn"));S.onclick=()=>{const m=`🚨 ${t("r_"+l.risk)}: ${defang(l.final_url||l.url)}\n\n${l.explanation}\n${l.advice||""}\n\n— LinkShield AI`;window.open("https://wa.me/?text="+encodeURIComponent(m),"_blank","noopener")};
-    row.append(S);box.append(row);o.append(box)})}
-function render(d){
-  const o=$("#out");o.replaceChildren();
-  if(d.transcript){const f=el("div","fwd");f.append(el("strong",null,t("read")+" "),document.createTextNode(d.transcript.slice(0,280)+(d.transcript.length>280?"…":"")));o.append(f)}
-  if(d.tactics.length){const w=el("div","tactics",t("tactics")+":");d.tactics.forEach(k=>w.append(el("span","chip",(TAC[ui][k]||k))));o.append(w)}
-  renderSummary(d,o);renderLinks(d,o);if(!d.claims.length){if(!(d.links||[]).length)o.append(el("p","small",t("none")));return}
-  d.claims.forEach(c=>{
-    const box=el("article","claim v-"+c.verdict);
-    box.append(el("div","stamp",c.verdict_label));
-    box.append(el("h3",null,c.claim));
-    box.append(el("p",null,c.explanation));
-    const bar=el("div","conf");const i=el("i");i.style.width=Math.round(c.confidence*100)+"%";bar.append(i);box.append(bar);
-    box.append(el("div","small",t("conf")+": "+Math.round(c.confidence*100)+"%"));
-    if(!c.grounded)box.append(el("p","warn",t("ungrounded")));
-    renderTrace(c,box);
-    const row=el("div","row");
-    const L=el("button","ghost","🔊 "+t("listen"));L.onclick=async()=>{L.disabled=true;try{const r=await fetch("/api/tts",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({text:c.verdict_label+". "+c.explanation,language:d.output_language})});if(r.ok)new Audio(URL.createObjectURL(await r.blob())).play()}finally{L.disabled=false}};
-    const S=el("button","ghost","↗ "+t("share"));S.onclick=()=>{const m=`${EMO[c.verdict]} ${c.verdict_label}: ${c.claim}\n\n${c.explanation}\n\n— LinkShield AI`;window.open("https://wa.me/?text="+encodeURIComponent(m),"_blank","noopener")};
-    row.append(L,S);box.append(row);o.append(box)})}
-async function loadTrends(){
-  try{const d=await (await fetch("/api/trends")).json();const ul=$("#trends");ul.replaceChildren();
-    if(!d.top_claims.length){ul.append(el("li","small",t("nothing")));return}
-    d.top_claims.forEach(c=>{const li=el("li","v-"+c.verdict);li.append(el("span","dot"),document.createTextNode(c.claim+" "),el("span","small","×"+c.checks));ul.append(li)})}catch(e){}}
-applyUI();initAuth();
-</script>
+  <!-- Icon sprite: referenced with <use href="#i-name"> -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <linearGradient id="gBrand" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6fd6a2"/><stop offset="1" stop-color="#1f9460"/></linearGradient>
+      <linearGradient id="gBeam" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5a9a89" stop-opacity="0"/><stop offset=".6" stop-color="#5a9a89" stop-opacity=".38"/><stop offset="1" stop-color="#5a9a89" stop-opacity="0"/></linearGradient>
+    </defs>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8v9a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1z"/></symbol>
+    <symbol id="i-scan" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.4 8-8 9.5C7.4 20 4 17 4 12V6z"/></symbol>
+    <symbol id="i-shield-check" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.4 8-8 9.5C7.4 20 4 17 4 12V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></symbol>
+    <symbol id="i-shield-x" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.4 8-8 9.5C7.4 20 4 17 4 12V6z"/><path d="M9.5 9.5l5 5M14.5 9.5l-5 5"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 4l9 16H3z"/><path d="M12 10v4M12 17h.01"/></symbol>
+    <symbol id="i-help" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.7.4-1 1-1 1.7M12 17h.01"/></symbol>
+    <symbol id="i-paste" viewBox="0 0 24 24"><rect x="6" y="4" width="12" height="17" rx="2"/><path d="M9 4V3h6v1M9 10h6M9 14h4"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-copy" viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></symbol>
+    <symbol id="i-share" viewBox="0 0 24 24"><path d="M12 3v13M7 8l5-5 5 5M5 14v5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-5"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 3v13M7 11l5 5 5-5M5 20h14"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4 7h16M9 7V4h6v3M6 7l1 13h10l1-13M10 11v6M14 11v6"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+    <symbol id="i-browser" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M7 6.5h.01M10 6.5h.01"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16l.7 2.3L22 19l-2.3.7L19 22l-.7-2.3L16 19l2.3-.7z"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></symbol>
+    <symbol id="i-msg" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/></symbol>
+    <symbol id="i-chevron" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></symbol>
+    <symbol id="i-doc" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M9 13h6M9 17h4"/></symbol>
+    <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.500" cy="10" r="1.500"/><path d="M21 16l-5-5-8 8"/></symbol>
+    <symbol id="i-video" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M10 9.500v5l4.500-2.500z"/></symbol>
+    <symbol id="i-music" viewBox="0 0 24 24"><path d="M9 18V6l10-2v12"/><circle cx="6.500" cy="18" r="2.500"/><circle cx="16.500" cy="16" r="2.500"/></symbol>
+    <symbol id="i-archive" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="5" rx="1"/><path d="M5 9v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V9M10 13h4"/></symbol>
+    <symbol id="i-cog" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 10l3 2-3 2M13 15h3"/></symbol>
+    <symbol id="i-upload" viewBox="0 0 24 24"><path d="M12 16V4M7 9l5-5 5 5M5 20h14"/></symbol>
+    <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></symbol>
+    <symbol id="i-stop" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" rx="2.5"/></symbol>
+    <symbol id="i-volume" viewBox="0 0 24 24"><path d="M4 9.500v5h4l5 4v-13l-5 4zM16.500 9a4 4 0 0 1 0 6M19 6.500a8 8 0 0 1 0 11"/></symbol>
+    <symbol id="i-clip" viewBox="0 0 24 24"><path d="M20 11.500l-8.200 8.200a5 5 0 0 1-7-7l8.500-8.500a3.300 3.300 0 0 1 4.700 4.700L9.500 17.400a1.700 1.700 0 0 1-2.400-2.400L14.500 7.600"/></symbol>
+    <symbol id="i-quote" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M8.500 9.500h7M8.500 12.500h4"/></symbol>
+    <symbol id="i-send" viewBox="0 0 24 24"><path d="M21 3L3 10.500l7 2.500 2.500 7zM10 13l5-5"/></symbol>
+    <symbol id="i-stack" viewBox="0 0 24 24"><path d="M12 3l9 5-9 5-9-5z"/><path d="M3 12.5l9 5 9-5M3 17l9 5 9-5"/></symbol>
+    <symbol id="i-fish" viewBox="0 0 24 24"><path d="M3 12c3-5 9-6 13-2l5-3v10l-5-3c-4 4-10 3-13-2z"/><path d="M8 11h.01"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a1 1 0 0 1-1 1A16 16 0 0 1 4 5a1 1 0 0 1 1-1z"/></symbol>
+  </svg>
+
+  <header class="topbar">
+    <div class="wrap topbar-inner">
+      <a class="brand" href="#scan" aria-label="LinkShield home">
+        <span class="brand-mark"><svg class="ic"><use href="#i-shield-check"/></svg></span>
+        <span>LinkShield <b>AI</b></span>
+      </a>
+      <nav class="mainnav" aria-label="Main navigation">
+        <button class="nav-item active" data-view="scan"><svg class="ic"><use href="#i-shield-check"/></svg>Check</button>
+        <button class="nav-item" data-view="history"><svg class="ic"><use href="#i-clock"/></svg>History</button>
+      </nav>
+      <div class="top-actions">
+        <span id="cloudState" class="pill" title="Which checks are switched on for this server">Starting…</span>
+        <div class="account" id="account"></div>
+      </div>
+    </div>
+  </header>
+
+  <main id="content" class="wrap">
+    <!-- ───────────── Check ───────────── -->
+    <section id="view-scan" class="view">
+      <div class="hero2">
+        <div class="hero-copy">
+          <h1>Check it before you <span class="u">open it<svg viewBox="0 0 200 14" preserveAspectRatio="none" aria-hidden="true"><path d="M3 9c28-9 46 6 76 0s58-7 118 1"/></svg></span></h1>
+          <div class="kinds" role="group" aria-label="What you can check">
+            <button type="button" data-kind="link"><svg class="ic"><use href="#i-link"/></svg>Links</button>
+            <button type="button" data-kind="file"><svg class="ic"><use href="#i-file"/></svg>Files</button>
+            <button type="button" data-kind="image"><svg class="ic"><use href="#i-image"/></svg>Screenshots</button>
+            <button type="button" data-kind="voice"><svg class="ic"><use href="#i-mic"/></svg>Voice notes</button>
+            <button type="button" data-kind="chat"><svg class="ic"><use href="#i-msg"/></svg>Whole chats</button>
+            <button type="button" data-kind="many"><svg class="ic"><use href="#i-stack"/></svg>Many at once</button>
+          </div>
+          <form id="checkForm" class="checkcard" autocomplete="off">
+            <div class="compose" id="composeBox">
+              <textarea id="composeText" rows="3" maxlength="6000" placeholder="Paste anything that looks off, or several links at once…" aria-label="Link or message to check"></textarea>
+              <div id="attachChip" class="attach-list"></div>
+            </div>
+            <div id="urlAnatomy" class="anatomy" hidden></div>
+            <div class="checkbar">
+              <label class="tool" for="fileInput" title="Add a file or screenshot"><svg class="ic"><use href="#i-clip"/></svg><span>File</span></label>
+              <input id="fileInput" type="file" multiple />
+              <button type="button" class="tool" id="recordBtn" title="Record a voice note"><svg class="ic"><use href="#i-mic"/></svg><span>Voice</span></button>
+              <button type="button" class="tool" data-paste="composeText" title="Paste from clipboard"><svg class="ic"><use href="#i-paste"/></svg><span>Paste</span></button>
+              <label class="tool lang" title="Language of the answer"><svg class="ic"><use href="#i-globe"/></svg>
+                <select id="languageInput" aria-label="Language of the answer"><option value="">Auto</option><option value="en">English</option><option value="hi">हिन्दी</option><option value="bn">বাংলা</option><option value="ta">தமிழ்</option><option value="te">తెలుగు</option><option value="mr">मराठी</option><option value="gu">ગુજરાતી</option><option value="kn">ಕನ್ನಡ</option><option value="ml">മലയാളം</option><option value="pa">ਪੰਜਾਬੀ</option><option value="ur">اردو</option></select>
+              </label>
+              <button type="submit" class="btn btn-primary" id="checkBtn"><svg class="ic"><use href="#i-shield-check"/></svg><span>Check</span></button>
+            </div>
+          </form>
+          <div class="under">
+            <span><svg class="ic"><use href="#i-lock"/></svg>Never opened on your device</span>
+            <button type="button" class="linkbtn" data-channels><svg class="ic"><use href="#i-share"/></svg>Check from any app</button>
+          </div>
+        </div>
+
+        <div class="arena" id="heroArt">
+          <span class="orb o1"></span><span class="orb o2"></span><span class="orb o3"></span>
+          <div class="say" id="buddySay" aria-live="polite">Feed me something fishy</div>
+          <div class="critters" id="critters" aria-hidden="true"></div>
+          <span class="caught hidden" id="caughtCount" title="Scam critters you caught"><svg class="ic"><use href="#i-fish"/></svg><b>0</b> caught</span>
+          <div id="buddyWrap" class="buddy-wrap"></div>
+          <div class="bubbles examples" aria-label="Samples to try">
+            <button type="button" class="bubble b1" data-example="fake"><svg class="ic"><use href="#i-msg"/></svg>Fake bank SMS</button>
+            <button type="button" class="bubble b2" data-example="normal"><svg class="ic"><use href="#i-globe"/></svg>Normal site</button>
+            <button type="button" class="bubble b3" data-example="otp"><svg class="ic"><use href="#i-phone"/></svg>OTP scam</button>
+            <button type="button" class="bubble b4" data-sample="disguised"><svg class="ic"><use href="#i-image"/></svg>Disguised file</button>
+            <button type="button" class="bubble b5" data-example="pdf"><svg class="ic"><use href="#i-doc"/></svg>PDF link</button>
+            <button type="button" class="bubble b6 hidden" data-example="rumour" data-needs-claims><svg class="ic"><use href="#i-quote"/></svg>Health rumour</button>
+          </div>
+          <p class="arena-hint"><svg class="ic"><use href="#i-spark"/></svg>Tap a bubble to test me</p>
+        </div>
+      </div>
+      <div id="batchArea" hidden></div>
+      <div id="progressArea" hidden></div>
+      <div id="reportArea" class="hidden" aria-live="polite"></div>
+    </section>
+
+    <!-- ───────────── History ───────────── -->
+    <section id="view-history" class="view hidden">
+      <div class="page-head row hist-head">
+        <div class="owl-spot" id="owlSpot" role="button" tabindex="0" aria-label="Hoot, the history owl"><div class="owl-say" id="owlSay">Hoo! I keep every check you make.</div><div id="owlWrap" class="owl-wrap"></div></div>
+        <div class="hist-title"><h1>History</h1><p id="historyNote">Your recent checks.</p></div>
+        <div class="hstats">
+          <span><b id="statTotal">0</b>checked</span>
+          <span class="bad"><b id="statRisk">0</b>risky</span>
+          <button id="clearHistory" class="btn btn-soft sm"><svg class="ic"><use href="#i-trash"/></svg>Clear</button>
+        </div>
+      </div>
+      <div class="history-tools">
+        <div class="input-row search"><svg class="ic"><use href="#i-scan"/></svg><input id="historySearch" type="search" placeholder="Search…" aria-label="Search history" /></div>
+        <div class="filters" id="historyFilters" role="group" aria-label="Filter by result">
+          <button class="chip-btn active" data-filter="all">All</button>
+          <button class="chip-btn" data-filter="risky">Risky</button>
+          <button class="chip-btn" data-filter="caution">Caution</button>
+          <button class="chip-btn" data-filter="low">Low risk</button>
+          <button class="chip-btn" data-filter="unverified">Unverified</button>
+        </div>
+      </div>
+      <div id="historyArea" class="hlist"><p class="muted">Loading…</p></div>
+    </section>
+  </main>
+
+  <footer class="footer wrap"><span>LinkShield AI · A risk check, not a guarantee</span><span>Already paid or shared details? Call <b>1930</b> · <a target="_blank" rel="noopener" href="https://cybercrime.gov.in/">cybercrime.gov.in</a></span></footer>
+
+  <!-- Shieldy, the chat helper -->
+  <button type="button" class="chat-fab" id="chatFab" aria-label="Ask Shieldy, the LinkShield helper" aria-expanded="false"><span class="fab-bot" id="fabBot"></span><span class="fab-tip">Ask Shieldy</span></button>
+  <section class="chat-panel" id="chatPanel" aria-label="Chat with Shieldy" hidden>
+    <header class="chat-head">
+      <span class="chat-avatar" id="chatAvatar"></span>
+      <div><strong>Shieldy</strong><small id="chatStatus">Ask me anything about scams and fake news</small></div>
+      <div class="chat-tabs" role="tablist"><button type="button" class="active" data-chat-tab="talk" role="tab">Chat</button><button type="button" data-chat-tab="learned" role="tab">Taught <b id="noteCount">0</b></button></div>
+      <button type="button" class="icon-btn" id="chatClose" aria-label="Close the chat"><svg class="ic"><use href="#i-x"/></svg></button>
+    </header>
+    <div class="chat-body" id="chatTalk">
+      <div class="chat-log" id="chatLog" aria-live="polite"></div>
+      <div class="chat-suggest" id="chatSuggest"></div>
+      <form class="chat-form" id="chatForm" autocomplete="off">
+        <div id="chatImage" class="chat-image" hidden></div>
+        <div class="chat-input">
+          <label class="icon-btn" title="Add a screenshot"><svg class="ic"><use href="#i-image"/></svg><input type="file" id="chatFile" accept="image/*" hidden /></label>
+          <textarea id="chatText" rows="1" maxlength="4000" placeholder="Ask Shieldy anything…" aria-label="Your message to Shieldy"></textarea>
+          <button type="button" class="icon-btn" id="chatMic" title="Speak your question"><svg class="ic"><use href="#i-mic"/></svg></button>
+          <button type="submit" class="btn btn-primary chat-send" aria-label="Send"><svg class="ic"><use href="#i-send"/></svg></button>
+        </div>
+      </form>
+    </div>
+    <div class="chat-body" id="chatLearned" hidden>
+      <p class="muted small">Shieldy uses these notes in every answer. Teach it something about you, or correct it with 👎 on an answer.</p>
+      <form class="teach" id="teachForm"><input id="teachText" maxlength="500" placeholder="e.g. My bank is SBI. I look after my grandmother." aria-label="Something for Shieldy to remember" /><button class="btn btn-primary sm">Teach</button></form>
+      <ul class="notes" id="noteList"></ul>
+      <button type="button" class="btn btn-ghost sm" id="forgetAll"><svg class="ic"><use href="#i-trash"/></svg>Forget everything</button>
+    </div>
+  </section>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  <div class="dropzone" id="dropOverlay" aria-hidden="true"><div><svg class="ic"><use href="#i-upload"/></svg><strong>Drop it to check</strong><span>Never opened on your device</span></div></div>
+
+  <dialog id="channelDialog" class="dialog wide">
+    <form method="dialog">
+      <h3>Check from any app</h3>
+      <div class="channels">
+        <div class="channel"><span class="ck tone-brand"><svg class="ic"><use href="#i-share"/></svg></span><div><strong>Share button</strong><small>Install LinkShield, then Share → LinkShield from any app.</small><button type="button" id="installBtn" class="btn btn-soft sm hidden"><svg class="ic"><use href="#i-download"/></svg>Install</button><span id="installHint" class="slot">Android Chrome: menu → Add to Home screen.</span></div></div>
+        <div class="channel"><span class="ck tone-ok"><svg class="ic"><use href="#i-msg"/></svg></span><div><strong>WhatsApp</strong><small>Forward a message or file to the LinkShield number.</small><span id="whatsappSlot" class="slot">Not connected on this server.</span></div></div>
+        <div class="channel"><span class="ck tone-warn"><svg class="ic"><use href="#i-send"/></svg></span><div><strong>Telegram</strong><small>Forward a message or file to the bot.</small><span id="telegramSlot" class="slot">Not connected on this server.</span></div></div>
+        <div class="channel"><span class="ck tone-violet"><svg class="ic"><use href="#i-msg"/></svg></span><div><strong>Whole chat</strong><small>In WhatsApp: open the chat → ⋮ → More → Export chat, then add the file here. Its newest links are checked together.</small></div></div>
+      </div>
+      <div class="dialog-actions"><button class="btn btn-primary" value="cancel">Got it</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="confirmDialog" class="dialog">
+    <form method="dialog">
+      <span class="ck tone-danger"><svg class="ic"><use href="#i-trash"/></svg></span>
+      <h3 id="confirmTitle">Are you sure?</h3>
+      <p id="confirmText" class="muted"></p>
+      <div class="dialog-actions"><button class="btn btn-soft" value="cancel">Cancel</button><button class="btn btn-danger" value="ok" id="confirmOk">Delete</button></div>
+    </form>
+  </dialog>
+
+  <div class="lightbox hidden" id="lightbox" role="dialog" aria-label="Screenshot preview"><button class="icon-btn" aria-label="Close preview"><svg class="ic"><use href="#i-x"/></svg></button><img alt="Enlarged browser screenshot" /></div>
 </body>
 </html>

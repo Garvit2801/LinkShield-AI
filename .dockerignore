@@ -1,0 +1,12 @@
+.git
+__MACOSX
+.env
+.venv
+venv
+__pycache__
+.pytest_cache
+tests
+evals
+terraform
+*.zip
+*.log

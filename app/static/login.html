@@ -1,78 +1,92 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>LinkShield AI: sign in</title>
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-<style>
-:root{--bg:#EEF2F8;--panel:#fff;--ink:#14213D;--mute:#5B6B82;--line:#D5DDEA;--ok:#0F8B6D;--bad:#C8372D;--warn:#B97A00;--accent:#14213D}
-@media(prefers-color-scheme:dark){:root{--bg:#0D1526;--panel:#16223A;--ink:#E8EEF9;--mute:#9AABC4;--line:#2A3A5A;--ok:#3DD1A8;--bad:#FF7B70;--warn:#F2B84B;--accent:#E8EEF9}}
-*{box-sizing:border-box}
-body{margin:0;min-height:100vh;display:flex;flex-direction:column;background:var(--bg);color:var(--ink);font:16px/1.55 system-ui,-apple-system,"Segoe UI","Noto Sans Devanagari","Noto Sans",sans-serif}
-.top{display:flex;justify-content:flex-end;padding:16px}
-select{font:inherit;color:inherit;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:7px 10px;cursor:pointer}
-.wrap{flex:1;display:grid;place-items:center;padding:16px}
-.card{width:100%;max-width:440px;background:var(--panel);border:1px solid var(--line);border-radius:20px;padding:36px 28px;text-align:center;box-shadow:0 10px 40px rgba(20,33,61,.08)}
-.logo{font-size:44px;line-height:1}
-h1{margin:10px 0 6px;font-size:30px;letter-spacing:-.02em}
-.tag{color:var(--mute);margin:0 0 24px}
-ul{list-style:none;padding:0;margin:0 0 28px;text-align:left}
-li{display:flex;gap:12px;align-items:flex-start;margin:12px 0;font-size:15px}
-li b{display:block}
-li span.i{font-size:22px}
-#btn{display:flex;justify-content:center;min-height:44px}
-#msg{color:var(--bad);min-height:1.4em;margin:12px 0 0;font-size:14px}
-.guest{display:inline-block;margin-top:10px;color:var(--mute);font-size:14px}
-.fine{color:var(--mute);font-size:12px;margin-top:22px}
-a{color:inherit}
-a:focus-visible,select:focus-visible{outline:3px solid var(--warn);outline-offset:2px}
-</style>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="theme-color" content="#f1faf3" />
+  <meta name="color-scheme" content="only light" />
+  <meta name="description" content="Sign in to LinkShield AI: a second opinion on links, files, screenshots, voice notes and forwarded messages." />
+  <title>LinkShield AI · Sign in</title>
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/assets/icon-192.png" />
+  <script>
+    // Someone already signed in, or who chose to carry on as a guest, goes straight to the app without seeing this page.
+    (() => {
+      const q = new URLSearchParams(location.search);
+      const next = '/app' + (/^#[a-z]+$/.test(q.get('next') || '') ? q.get('next') : '');
+      try {
+        if (q.has('out')) { localStorage.removeItem('ls_tok'); localStorage.removeItem('ls_guest'); return; }
+        if (q.has('signin') || q.has('expired')) return;
+        const t = localStorage.getItem('ls_tok');
+        const p = t && JSON.parse(atob(t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+        if ((p && p.exp * 1000 > Date.now() + 30000) || localStorage.getItem('ls_guest') === '1') location.replace(next);
+      } catch { /* storage blocked: show the page */ }
+    })();
+    document.documentElement.classList.add('js');
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600..800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" />
+  <link rel="stylesheet" href="/assets/app.css" />
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script type="module" src="/assets/login.js"></script>
 </head>
-<body>
-<div class="top"><select id="ui" aria-label="Language"><option value="en">English</option><option value="hi">हिन्दी</option></select></div>
-<div class="wrap">
-  <main class="card">
-    <div class="logo" aria-hidden="true">🛡️</div>
-    <h1>LinkShield AI</h1>
-    <p class="tag" id="tag"></p>
-    <ul>
-      <li><span class="i" aria-hidden="true">🔗</span><div><b id="f1t"></b><span id="f1d"></span></div></li>
-      <li><span class="i" aria-hidden="true">📰</span><div><b id="f2t"></b><span id="f2d"></span></div></li>
-      <li><span class="i" aria-hidden="true">🗂️</span><div><b id="f3t"></b><span id="f3d"></span></div></li>
-    </ul>
-    <div id="btn"></div>
-    <p id="msg" role="status" aria-live="polite"></p>
-    <a class="guest" id="guest" href="/app" hidden></a>
-    <p class="fine" id="fine"></p>
+<body class="login-page">
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <symbol id="i-shield-check" viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.4 8-8 9.5C7.4 20 4 17 4 12V6z"/><path d="M8.5 12l2.5 2.5 4.5-5"/></symbol>
+    <symbol id="i-link" viewBox="0 0 24 24"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></symbol>
+    <symbol id="i-quote" viewBox="0 0 24 24"><path d="M4 5h16v11H9l-5 4z"/><path d="M8.5 9.5h7M8.5 12.5h4"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+    <symbol id="i-lock" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></symbol>
+    <symbol id="i-mic" viewBox="0 0 24 24"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></symbol>
+    <symbol id="i-image" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><circle cx="8.5" cy="10" r="1.5"/><path d="M21 16l-5-5-8 8"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></symbol>
+    <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a1 1 0 0 1-1 1A16 16 0 0 1 4 5a1 1 0 0 1 1-1z"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+    <symbol id="i-fish" viewBox="0 0 24 24"><path d="M3 12c3-5 9-6 13-2l5-3v10l-5-3c-4 4-10 3-13-2z"/><path d="M8 11h.01"/></symbol>
+  </svg>
+
+  <div class="drift" id="drift" aria-hidden="true"></div>
+
+  <main class="login wrap">
+    <section class="login-copy">
+      <a class="brand" href="/?signin=1"><span class="brand-mark"><svg class="ic"><use href="#i-shield-check"/></svg></span><span>LinkShield <b>AI</b></span></a>
+      <h1 data-t="title">Check it before you <span class="u">open it<svg viewBox="0 0 200 14" preserveAspectRatio="none" aria-hidden="true"><path d="M3 9c28-9 46 6 76 0s58-7 118 1"/></svg></span></h1>
+      <p class="login-lead" data-t="lead">A second opinion on anything you were sent: links, files, screenshots, voice notes and forwards.</p>
+      <ul class="perks">
+        <li style="--i:0"><span class="ck tone-danger"><svg class="ic"><use href="#i-link"/></svg></span><div><strong data-t="p1">Scam links and files</strong><small data-t="p1d">Opened in a safe sandbox, never on your phone.</small></div></li>
+        <li style="--i:1"><span class="ck tone-warn"><svg class="ic"><use href="#i-quote"/></svg></span><div><strong data-t="p2">Fake news, traced</strong><small data-t="p2d">Claims checked against fact-checkers and official sources.</small></div></li>
+        <li style="--i:2"><span class="ck tone-ok"><svg class="ic"><use href="#i-clock"/></svg></span><div><strong data-t="p3">Your history and helper</strong><small data-t="p3d">Saved to your account, with Shieldy to answer questions.</small></div></li>
+      </ul>
+      <div class="signin-card card">
+        <p id="msg" class="signin-msg" role="status" aria-live="polite" hidden><svg class="ic"><use href="#i-info"/></svg><span></span></p>
+        <div class="signin-head"><span class="signin-ic"><svg class="ic"><use href="#i-shield-check"/></svg></span><div><strong data-t="cardTitle">Sign in to keep your history</strong><small data-t="cardSub">Or try it first as a guest. No account needed.</small></div></div>
+        <div id="gbtn" class="gbtn"></div>
+        <div class="or"><span data-t="or">or</span></div>
+        <button type="button" class="guest-btn" id="guestBtn"><svg class="ic"><use href="#i-user"/></svg><span data-t="guest">Continue as a guest</span><svg class="ic arrow"><use href="#i-arrow"/></svg></button>
+        <p class="fine"><svg class="ic"><use href="#i-lock"/></svg><span data-t="fine">Signing in only reads your name, email and photo. Files you check are never kept.</span></p>
+      </div>
+      <div class="login-foot"><label class="lang-pick"><svg class="ic"><use href="#i-globe"/></svg><select id="lang" aria-label="Language"><option value="en">English</option><option value="hi">हिन्दी</option></select></label><span class="help-line"><svg class="ic"><use href="#i-phone"/></svg><span data-t="help">Cheated online? Call <b>1930</b></span></span></div>
+    </section>
+
+    <section class="login-stage arena" id="heroArt">
+      <span class="orb o1"></span><span class="orb o2"></span><span class="orb o3"></span>
+      <div class="say" id="buddySay" aria-live="polite" data-t="say">Catch the scams before they reach you!</div>
+      <div class="critters" id="critters" aria-hidden="true"></div>
+      <span class="caught" id="caughtCount"><svg class="ic"><use href="#i-fish"/></svg><b>0</b>&nbsp;<span data-t="caught">caught</span></span>
+      <div id="buddyWrap" class="buddy-wrap"></div>
+      <div class="floaty f1"><svg class="ic"><use href="#i-file"/></svg></div>
+      <div class="floaty f2"><svg class="ic"><use href="#i-mic"/></svg></div>
+      <div class="floaty f3"><svg class="ic"><use href="#i-image"/></svg></div>
+      <div class="floaty f4"><svg class="ic"><use href="#i-lock"/></svg></div>
+      <p class="arena-hint"><svg class="ic"><use href="#i-spark"/></svg><span data-t="hint">Tap the critters · drag the shield</span></p>
+    </section>
   </main>
-</div>
-<script>
-const $=s=>document.querySelector(s);
-const T={en:{tag:"Know if a forward is a scam or a lie, before you share it.",f1t:"Link check. ",f1d:"Spots scam and phishing links.",f2t:"Claim check. ",f2d:"Verifies claims against trusted sources.",f3t:"Your history. ",f3d:"Saved only for you. You can delete it any time.",guest:"Continue without signing in",fine:"We only read your name, email and photo to sign you in. Uploaded images and audio are never stored.",err:"Sign-in failed. Please try again.",cfg:"Sign-in is not set up yet."},
-hi:{tag:"फ़ॉरवर्ड स्कैम या झूठ है या नहीं, आगे भेजने से पहले जानें।",f1t:"लिंक जाँच। ",f1d:"स्कैम और फ़िशिंग लिंक पकड़ता है।",f2t:"दावों की जाँच। ",f2d:"भरोसेमंद स्रोतों से दावे परखता है।",f3t:"आपका इतिहास। ",f3d:"सिर्फ़ आपके लिए सहेजा जाता है। कभी भी मिटा सकते हैं।",guest:"बिना साइन इन के जारी रखें",fine:"साइन इन के लिए हम सिर्फ़ आपका नाम, ईमेल और फ़ोटो पढ़ते हैं। अपलोड की गई तस्वीरें और ऑडियो कभी सहेजे नहीं जाते।",err:"साइन इन नहीं हो सका। फिर कोशिश करें।",cfg:"साइन इन अभी सेट नहीं है।"}};
-let ui=(navigator.language||"").startsWith("hi")?"hi":"en",cfg={authRequired:false,googleClientId:""};
-const KEY="ls_tok";
-const jwt=s=>{try{return JSON.parse(atob(s.split(".")[1].replace(/-/g,"+").replace(/_/g,"/")))}catch(e){return null}};
-function valid(){const t=localStorage.getItem(KEY),p=t&&jwt(t);return !!(p&&p.exp*1000>Date.now())}
-function apply(){const t=T[ui];document.documentElement.lang=ui;$("#ui").value=ui;
-  for(const k of ["tag","f1t","f1d","f2t","f2d","f3t","f3d","fine"])$("#"+k).textContent=t[k];$("#guest").textContent=t.guest}
-$("#ui").onchange=e=>{ui=e.target.value;apply()};
-const params=new URLSearchParams(location.search),signedOut=params.has("out");
-function onCred(r){localStorage.setItem(KEY,r.credential);location.replace("/app")}
-function renderBtn(){google.accounts.id.renderButton($("#btn"),{theme:"filled_blue",size:"large",text:"continue_with",shape:"pill",width:300,locale:ui})}
-async function init(){
-  apply();
-  if(!signedOut&&valid()){location.replace("/app");return}
-  if(signedOut)localStorage.removeItem(KEY);
-  try{cfg=await (await fetch("/api/config")).json()}catch(e){}
-  $("#guest").hidden=cfg.authRequired;
-  if(!cfg.googleClientId){$("#msg").textContent=T[ui].cfg;return}
-  const start=()=>{google.accounts.id.initialize({client_id:cfg.googleClientId,callback:onCred,auto_select:!signedOut});
-    if(signedOut)google.accounts.id.disableAutoSelect();renderBtn()};
-  if(window.google&&google.accounts)start();
-  else{const w=setInterval(()=>{if(window.google&&google.accounts){clearInterval(w);start()}},100);setTimeout(()=>{clearInterval(w);if(!(window.google&&google.accounts))$("#msg").textContent=T[ui].err},8000)}}
-init();
-</script>
 </body>
 </html>

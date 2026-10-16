@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>LinkShield Wireframes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a diagram you can tap, with a detail panel beside it (below it on phones). */
+:root{
+  --bg:#f6f5fa;--surface:#ffffff;--ink:#1c1b29;--muted:#63617a;--line:#dddbe8;--wire:#85839a;
+  --gem-bg:#eeedfe;--gem-line:#534ab7;--gem-ink:#352e86;--gem-sub:#4f46b0;
+  --code-bg:#faf9f5;--code-line:#cfccc0;--code-ink:#1f1e1d;--code-sub:#5c5a55;
+  --cloud-bg:#e1f5ee;--cloud-line:#0f6e56;--cloud-ink:#074d3c;--cloud-sub:#0f6e56;
+  --ext-bg:#faeeda;--ext-line:#b06f12;--ext-ink:#5c3505;--ext-sub:#7d4a0a;
+  --focus:#1c1b29;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#14131c;--surface:#1d1c28;--ink:#eceaf5;--muted:#a4a1b8;--line:#33313f;--wire:#8a879d;
+  --gem-bg:#2a2850;--gem-line:#8d86ea;--gem-ink:#dedbff;--gem-sub:#b6b1f5;
+  --code-bg:#26252d;--code-line:#5a5866;--code-ink:#efedf5;--code-sub:#b3b0c0;
+  --cloud-bg:#12352c;--cloud-line:#3fb995;--cloud-ink:#cdf4e6;--cloud-sub:#7fd9bb;
+  --ext-bg:#3a2a10;--ext-line:#d99a3a;--ext-ink:#f8e3bd;--ext-sub:#e6bb74;
+  --focus:#eceaf5;color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#14131c;--surface:#1d1c28;--ink:#eceaf5;--muted:#a4a1b8;--line:#33313f;--wire:#8a879d;
+  --gem-bg:#2a2850;--gem-line:#8d86ea;--gem-ink:#dedbff;--gem-sub:#b6b1f5;
+  --code-bg:#26252d;--code-line:#5a5866;--code-ink:#efedf5;--code-sub:#b3b0c0;
+  --cloud-bg:#12352c;--cloud-line:#3fb995;--cloud-ink:#cdf4e6;--cloud-sub:#7fd9bb;
+  --ext-bg:#3a2a10;--ext-line:#d99a3a;--ext-ink:#f8e3bd;--ext-sub:#e6bb74;
+  --focus:#eceaf5;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--sans);font-size:16px;line-height:1.55}
+.page{max-width:1240px;margin:0 auto;padding-block:28px 56px;padding-inline:20px;display:grid;gap:22px}
+header{display:grid;gap:8px}
+.eyebrow{font:500 12px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+h1{margin:0;font-size:clamp(26px,4vw,36px);font-weight:600;letter-spacing:-.02em;line-height:1.15;text-wrap:balance}
+.lede{margin:0;max-width:65ch;color:var(--muted)}
+.bar{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;justify-content:space-between}
+.tabs,.filters{display:flex;flex-wrap:wrap;gap:6px}
+button{font:inherit;color:inherit;cursor:pointer}
+.tab{padding:9px 16px;border:1px solid var(--line);border-radius:10px;background:var(--surface);font-weight:500}
+.tab[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;background:transparent;font-size:14px;color:var(--muted)}
+.chip[aria-pressed="true"]{border-color:var(--ink);color:var(--ink);background:var(--surface)}
+.chip svg{width:14px;height:14px}
+button:focus-visible,.node:focus-visible{outline:3px solid var(--focus);outline-offset:3px}
+.work{display:grid;grid-template-columns:minmax(0,1fr) 340px;gap:20px;align-items:start}
+.canvas{min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:16px;overflow-x:auto;padding:14px}
+.canvas svg{display:block;width:100%;min-width:720px;height:auto}
+.panel{position:sticky;top:calc(env(safe-area-inset-top,0px) + 16px);min-width:0;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px;display:grid;gap:14px}
+.panel h2{margin:0;font-size:22px;font-weight:600;letter-spacing:-.01em}
+.panel p{margin:0}
+.tags{display:flex;flex-wrap:wrap;gap:8px}
+.tag{display:inline-flex;align-items:center;gap:7px;padding:3px 10px;border-radius:999px;font-size:13px;font-weight:500;border:1px solid var(--line)}
+.tag svg{width:13px;height:13px}
+.tag.k-gem{background:var(--gem-bg);border-color:var(--gem-line);color:var(--gem-ink)}
+.tag.k-code{background:var(--code-bg);border-color:var(--code-line);color:var(--code-ink)}
+.tag.k-cloud{background:var(--cloud-bg);border-color:var(--cloud-line);color:var(--cloud-ink)}
+.tag.k-ext{background:var(--ext-bg);border-color:var(--ext-line);color:var(--ext-ink)}
+.where{font:400 13px var(--mono);color:var(--muted);overflow-wrap:anywhere;padding-top:12px;border-top:1px solid var(--line)}
+.where b{display:block;font:500 11px var(--mono);letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px}
+.hint{font-size:14px;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 18px;font-size:14px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:8px}
+.sw{width:18px;height:18px;border-radius:5px;border:1.5px solid}
+.sw.k-gem{background:var(--gem-bg);border-color:var(--gem-line)}.sw.k-code{background:var(--code-bg);border-color:var(--code-line)}
+.sw.k-cloud{background:var(--cloud-bg);border-color:var(--cloud-line)}.sw.k-ext{background:var(--ext-bg);border-color:var(--ext-line)}
+.sw.iso{border-width:3px;border-color:var(--ink)}
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin:0;padding:0;list-style:none}
+.rules li{padding:16px 18px;border-left:3px solid var(--gem-line);background:var(--surface);border-radius:0 12px 12px 0}
+.rules b{display:block;margin-bottom:2px}
+.rules span{color:var(--muted);font-size:15px}
+/* diagram */
+svg text{font-family:var(--sans)}
+.node{cursor:pointer;outline:none}
+.node rect{stroke-width:1.4;transition:stroke-width .15s}
+.node .t{font-size:26px;font-weight:500}.node .s{font-size:20px}.node .x{font-size:17px}
+.k-gem rect{fill:var(--gem-bg);stroke:var(--gem-line)}.k-gem .t{fill:var(--gem-ink)}.k-gem .s{fill:var(--gem-sub)}
+.k-code rect{fill:var(--code-bg);stroke:var(--code-line)}.k-code .t{fill:var(--code-ink)}.k-code .s{fill:var(--code-sub)}
+.k-cloud rect{fill:var(--cloud-bg);stroke:var(--cloud-line)}.k-cloud .t{fill:var(--cloud-ink)}.k-cloud .s{fill:var(--cloud-sub)}
+.k-ext rect{fill:var(--ext-bg);stroke:var(--ext-line)}.k-ext .t{fill:var(--ext-ink)}.k-ext .s{fill:var(--ext-sub)}
+.node.iso rect{stroke-width:3.2;stroke:var(--ink)}
+.node.is-todo rect{stroke-dasharray:8 6}
+.node:hover rect{stroke-width:3}
+.node.sel rect{stroke-width:4.5;stroke:var(--ink)}
+.node.dim{opacity:.22}
+.st{fill:var(--ink)}.st-ring{fill:none;stroke:var(--ink);stroke-width:2}
+.chip .st-ring,.tag .st-ring{stroke-width:2.4}
+.wire{fill:none;stroke:var(--wire);stroke-width:2.2;stroke-linejoin:round}
+.head{fill:none;stroke:var(--wire);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.note{font-size:20px;fill:var(--muted)}.note.sm{font-size:17px}.note.gem{fill:var(--gem-sub);font-size:19px}
+.group{fill:none;stroke:var(--line);stroke-width:1.6}
+.grouplabel{font-size:25px;font-weight:500;fill:var(--ink)}
+@media (max-width:900px){.work{grid-template-columns:minmax(0,1fr)}.panel{position:static}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+<style>body{margin:0}[hidden]{display:none!important}</style>
+</head>
+<body>
+<div class="page">
+<header>
+  <span class="eyebrow">LinkShield AI · target design · 13 Oct 2026</span>
+  <h1>How one check flows, and what it runs on</h1>
+  <p class="lede">A second opinion for anything forwarded to you: is it a scam, is it true, is it safe to open. Tap any box to see what it does and how much of it is built.</p>
+</header>
+<div class="bar">
+  <div class="tabs" role="tablist" aria-label="Diagram">
+    <button class="tab" role="tab" id="tab-pipeline" data-tab="pipeline" aria-selected="true">Check pipeline</button>
+    <button class="tab" role="tab" id="tab-architecture" data-tab="architecture" aria-selected="false">System architecture</button>
+  </div>
+  <div class="filters" role="group" aria-label="Show by progress">
+    <button class="chip" id="f-all" data-filter="all" aria-pressed="true">Everything</button>
+    <button class="chip" id="f-built" data-filter="built" aria-pressed="false"><svg viewBox="0 0 16 16"><circle class="st" cx="8" cy="8" r="6"/></svg>Built</button>
+    <button class="chip" id="f-partial" data-filter="partial" aria-pressed="false"><svg viewBox="0 0 16 16"><circle class="st-ring" cx="8" cy="8" r="6"/><path class="st" d="M8 2a6 6 0 0 1 0 12z"/></svg>Built, not yet run live</button>
+    <button class="chip" id="f-todo" data-filter="todo" aria-pressed="false"><svg viewBox="0 0 16 16"><circle class="st-ring" cx="8" cy="8" r="6"/></svg>To build</button>
+  </div>
+</div>
+<div class="work">
+  <div class="canvas" id="view-pipeline"><svg viewBox="0 0 1500 1094" role="group" aria-label="Check pipeline diagram"><defs><marker id="ap" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head" d="M1 1L9 5L1 9"/></marker></defs><g class="node k-code is-built" data-id="input" tabindex="0" role="button" aria-label="Input: Text, link, image, voice, file"><rect x="460" y="30" width="580" height="108" rx="16"/><text class="t" x="750.0" y="78.0" text-anchor="middle">Input</text><text class="s" x="750.0" y="110.0" text-anchor="middle">Text, link, image, voice, file</text><circle class="st" cx="1018" cy="52" r="7"/></g><path class="wire" d="M750 138 L750 192" marker-end="url(#ap)"/><g class="node k-gem is-partial" data-id="extract" tabindex="0" role="button" aria-label="Extract: Claims, links, files, tactics"><rect x="460" y="196" width="580" height="108" rx="16"/><text class="t" x="750.0" y="244.0" text-anchor="middle">Extract</text><text class="s" x="750.0" y="276.0" text-anchor="middle">Claims, links, files, tactics</text><circle class="st-ring" cx="1018" cy="218" r="7"/><path class="st" d="M1018 211a7 7 0 0 1 0 14z"/></g><path class="wire" d="M480 304 L480 334 L270.0 334 L270.0 378" marker-end="url(#ap)"/><path class="wire" d="M750.0 304 L750.0 334 L750.0 334 L750.0 378" marker-end="url(#ap)"/><path class="wire" d="M1020 304 L1020 334 L1230.0 334 L1230.0 378" marker-end="url(#ap)"/><g class="node k-gem is-partial" data-id="research" tabindex="0" role="button" aria-label="Research claim: Search grounding, sources"><rect x="60" y="382" width="420" height="108" rx="16"/><text class="t" x="270.0" y="430.0" text-anchor="middle">Research claim</text><text class="s" x="270.0" y="462.0" text-anchor="middle">Search grounding, sources</text><circle class="st-ring" cx="458" cy="404" r="7"/><path class="st" d="M458 397a7 7 0 0 1 0 14z"/></g><g class="node k-code is-built iso" data-id="trace" tabindex="0" role="button" aria-label="Trace link: Sandbox visit, hops, screenshot"><rect x="540" y="382" width="420" height="108" rx="16"/><text class="t" x="750.0" y="430.0" text-anchor="middle">Trace link</text><text class="s" x="750.0" y="462.0" text-anchor="middle">Sandbox visit, hops, screenshot</text><circle class="st" cx="938" cy="404" r="7"/></g><g class="node k-code is-built iso" data-id="inspect" tabindex="0" role="button" aria-label="Inspect file: Sandbox download, real type"><rect x="1020" y="382" width="420" height="108" rx="16"/><text class="t" x="1230.0" y="430.0" text-anchor="middle">Inspect file</text><text class="s" x="1230.0" y="462.0" text-anchor="middle">Sandbox download, real type</text><circle class="st" cx="1418" cy="404" r="7"/></g><path class="wire" d="M270.0 490 L270.0 544" marker-end="url(#ap)"/><path class="wire" d="M750.0 490 L750.0 544" marker-end="url(#ap)"/><path class="wire" d="M1230.0 490 L1230.0 544" marker-end="url(#ap)"/><path class="wire" d="M1020 436 L964 436" marker-end="url(#ap)"/><text class="note sm" x="990" y="526" text-anchor="middle">links found inside documents</text><g class="node k-gem is-partial" data-id="judgeclaim" tabindex="0" role="button" aria-label="Judge claim: Evidence only, with reasons"><rect x="60" y="548" width="420" height="108" rx="16"/><text class="t" x="270.0" y="596.0" text-anchor="middle">Judge claim</text><text class="s" x="270.0" y="628.0" text-anchor="middle">Evidence only, with reasons</text><circle class="st-ring" cx="458" cy="570" r="7"/><path class="st" d="M458 563a7 7 0 0 1 0 14z"/></g><g class="node k-code is-built" data-id="judgelink" tabindex="0" role="button" aria-label="Judge link: Fixed rules plus Web Risk"><rect x="540" y="548" width="420" height="108" rx="16"/><text class="t" x="750.0" y="596.0" text-anchor="middle">Judge link</text><text class="s" x="750.0" y="628.0" text-anchor="middle">Fixed rules plus Web Risk</text><circle class="st" cx="938" cy="570" r="7"/></g><g class="node k-code is-built" data-id="judgefile" tabindex="0" role="button" aria-label="Judge file: Fixed rules plus known-file lookup"><rect x="1020" y="548" width="420" height="108" rx="16"/><text class="t" x="1230.0" y="596.0" text-anchor="middle">Judge file</text><text class="s" x="1230.0" y="628.0" text-anchor="middle">Fixed rules plus known-file lookup</text><circle class="st" cx="1418" cy="570" r="7"/></g><path class="wire" d="M270.0 656 L270.0 740 L520 740 L520 786" marker-end="url(#ap)"/><path class="wire" d="M750.0 656 L750.0 786" marker-end="url(#ap)"/><path class="wire" d="M1230.0 656 L1230.0 740 L980 740 L980 786" marker-end="url(#ap)"/><g class="node k-gem is-partial" data-id="summary" tabindex="0" role="button" aria-label="Summary: Headline, risk, next action"><rect x="460" y="790" width="580" height="108" rx="16"/><text class="t" x="750.0" y="838.0" text-anchor="middle">Summary</text><text class="s" x="750.0" y="870.0" text-anchor="middle">Headline, risk, next action</text><circle class="st-ring" cx="1018" cy="812" r="7"/><path class="st" d="M1018 805a7 7 0 0 1 0 14z"/></g><text class="note gem" x="1060" y="836" text-anchor="start">Explains the verdicts.</text><text class="note gem" x="1060" y="862" text-anchor="start">Never changes them.</text><path class="wire" d="M750 898 L750 952" marker-end="url(#ap)"/><g class="node k-code is-built" data-id="response" tabindex="0" role="button" aria-label="Response: Cards, link trail, download flag, spoken verdict, history saved"><rect x="360" y="956" width="780" height="108" rx="16"/><text class="t" x="750.0" y="1004.0" text-anchor="middle">Response</text><text class="s" x="750.0" y="1036.0" text-anchor="middle">Cards, link trail, download flag, spoken verdict, history saved</text><circle class="st" cx="1118" cy="978" r="7"/></g></svg></div>
+  <div class="canvas" id="view-architecture" hidden><svg viewBox="0 0 1560 1030" role="group" aria-label="System architecture diagram"><defs><marker id="aa" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head" d="M1 1L9 5L1 9"/></marker></defs><g class="node k-code is-built" data-id="ui" tabindex="0" role="button" aria-label="Browser UI: Paste, upload, record"><rect x="430" y="30" width="300" height="104" rx="16"/><text class="t" x="580.0" y="76.0" text-anchor="middle">Browser UI</text><text class="s" x="580.0" y="108.0" text-anchor="middle">Paste, upload, record</text><circle class="st" cx="708" cy="52" r="7"/></g><g class="node k-code is-built" data-id="share" tabindex="0" role="button" aria-label="Share to LinkShield: Android share sheet"><rect x="760" y="30" width="300" height="104" rx="16"/><text class="t" x="910.0" y="76.0" text-anchor="middle">Share to LinkShield</text><text class="s" x="910.0" y="108.0" text-anchor="middle">Android share sheet</text><circle class="st" cx="1038" cy="52" r="7"/></g><g class="node k-code is-partial" data-id="bots" tabindex="0" role="button" aria-label="Chat bots: Telegram, WhatsApp"><rect x="1090" y="30" width="300" height="104" rx="16"/><text class="t" x="1240.0" y="76.0" text-anchor="middle">Chat bots</text><text class="s" x="1240.0" y="108.0" text-anchor="middle">Telegram, WhatsApp</text><circle class="st-ring" cx="1368" cy="52" r="7"/><path class="st" d="M1368 45a7 7 0 0 1 0 14z"/></g><path class="wire" d="M580 134 L580 166 L780 166 L780 218" marker-end="url(#aa)"/><path class="wire" d="M910 134 L910 166 L780 166"/><path class="wire" d="M1240 134 L1240 166 L780 166"/><text class="note" x="796" y="202" text-anchor="start">HTTPS + ID token</text><path class="wire" d="M430 82 L210 82 L210 306" marker-end="url(#aa)"/><text class="note" x="250" y="70" text-anchor="start">Sign in</text><rect class="group" x="440" y="222" width="680" height="560" rx="26"/><text class="grouplabel" x="476" y="272" text-anchor="start">Cloud Run service</text><g class="node k-gem is-built" data-id="guard" tabindex="0" role="button" aria-label="Auth guard: Verify token, rate limit, all endpoints"><rect x="480" y="300" width="600" height="112" rx="16"/><text class="t" x="780.0" y="350.0" text-anchor="middle">Auth guard</text><text class="s" x="780.0" y="382.0" text-anchor="middle">Verify token, rate limit, all endpoints</text><circle class="st" cx="1058" cy="322" r="7"/></g><path class="wire" d="M780 412 L780 452" marker-end="url(#aa)"/><g class="node k-gem is-built" data-id="session" tabindex="0" role="button" aria-label="Session store: Prefs and check history"><rect x="480" y="456" width="600" height="112" rx="16"/><text class="t" x="780.0" y="506.0" text-anchor="middle">Session store</text><text class="s" x="780.0" y="538.0" text-anchor="middle">Prefs and check history</text><circle class="st" cx="1058" cy="478" r="7"/></g><path class="wire" d="M780 568 L780 608" marker-end="url(#aa)"/><g class="node k-gem is-built" data-id="engine" tabindex="0" role="button" aria-label="Pipeline engine: Claims, links, files, summary"><rect x="480" y="612" width="600" height="112" rx="16"/><text class="t" x="780.0" y="662.0" text-anchor="middle">Pipeline engine</text><text class="s" x="780.0" y="694.0" text-anchor="middle">Claims, links, files, summary</text><circle class="st" cx="1058" cy="634" r="7"/></g><g class="node k-cloud is-partial" data-id="fbauth" tabindex="0" role="button" aria-label="Firebase Auth: Google or guest"><rect x="50" y="310" width="320" height="108" rx="16"/><text class="t" x="210.0" y="358.0" text-anchor="middle">Firebase Auth</text><text class="s" x="210.0" y="390.0" text-anchor="middle">Google or guest</text><circle class="st-ring" cx="348" cy="332" r="7"/><path class="st" d="M348 325a7 7 0 0 1 0 14z"/></g><path class="wire" d="M480 356 L376 356" marker-end="url(#aa)"/><g class="node k-cloud is-built" data-id="firestore" tabindex="0" role="button" aria-label="Firestore: Sessions and history"><rect x="1190" y="460" width="320" height="104" rx="16"/><text class="t" x="1350.0" y="506.0" text-anchor="middle">Firestore</text><text class="s" x="1350.0" y="538.0" text-anchor="middle">Sessions and history</text><circle class="st" cx="1488" cy="482" r="7"/></g><path class="wire" d="M1080 512 L1186 512" marker-end="url(#aa)"/><g class="node k-cloud is-built" data-id="bigquery" tabindex="0" role="button" aria-label="BigQuery: Claim and scan trends"><rect x="1190" y="616" width="320" height="104" rx="16"/><text class="t" x="1350.0" y="662.0" text-anchor="middle">BigQuery</text><text class="s" x="1350.0" y="694.0" text-anchor="middle">Claim and scan trends</text><circle class="st" cx="1488" cy="638" r="7"/></g><path class="wire" d="M1080 668 L1186 668" marker-end="url(#aa)"/><g class="node k-gem is-partial iso" data-id="sandbox" tabindex="0" role="button" aria-label="Sandbox worker: Isolated machine, no secrets"><rect x="50" y="592" width="320" height="152" rx="16"/><text class="t" x="210.0" y="648.0" text-anchor="middle">Sandbox worker</text><text class="s" x="210.0" y="680.0" text-anchor="middle">Isolated machine, no secrets</text><text class="s x" x="210.0" y="720.0" text-anchor="middle">Browser visit · file inspection</text><circle class="st-ring" cx="348" cy="614" r="7"/><path class="st" d="M348 607a7 7 0 0 1 0 14z"/></g><path class="wire" d="M480 668 L376 668" marker-end="url(#aa)"/><text class="note sm" x="428" y="652" text-anchor="middle">token</text><path class="wire" d="M780 724 L780 840"/><path class="wire" d="M150 840 L1410 840"/><path class="wire" d="M150 840 L150 886" marker-end="url(#aa)"/><path class="wire" d="M402 840 L402 886" marker-end="url(#aa)"/><path class="wire" d="M654 840 L654 886" marker-end="url(#aa)"/><path class="wire" d="M906 840 L906 886" marker-end="url(#aa)"/><path class="wire" d="M1158 840 L1158 886" marker-end="url(#aa)"/><path class="wire" d="M1410 840 L1410 886" marker-end="url(#aa)"/><g class="node k-cloud is-built" data-id="vertex" tabindex="0" role="button" aria-label="Vertex AI: Gemini models"><rect x="34" y="890" width="232" height="108" rx="16"/><text class="t" x="150.0" y="938.0" text-anchor="middle">Vertex AI</text><text class="s" x="150.0" y="970.0" text-anchor="middle">Gemini models</text><circle class="st" cx="244" cy="912" r="7"/></g><g class="node k-cloud is-built" data-id="search" tabindex="0" role="button" aria-label="Google Search: Claim grounding"><rect x="286" y="890" width="232" height="108" rx="16"/><text class="t" x="402.0" y="938.0" text-anchor="middle">Google Search</text><text class="s" x="402.0" y="970.0" text-anchor="middle">Claim grounding</text><circle class="st" cx="496" cy="912" r="7"/></g><g class="node k-cloud is-built" data-id="webrisk" tabindex="0" role="button" aria-label="Web Risk API: Threat lookup"><rect x="538" y="890" width="232" height="108" rx="16"/><text class="t" x="654.0" y="938.0" text-anchor="middle">Web Risk API</text><text class="s" x="654.0" y="970.0" text-anchor="middle">Threat lookup</text><circle class="st" cx="748" cy="912" r="7"/></g><g class="node k-cloud is-built" data-id="tts" tabindex="0" role="button" aria-label="Text-to-Speech: Spoken verdicts"><rect x="790" y="890" width="232" height="108" rx="16"/><text class="t" x="906.0" y="938.0" text-anchor="middle">Text-to-Speech</text><text class="s" x="906.0" y="970.0" text-anchor="middle">Spoken verdicts</text><circle class="st" cx="1000" cy="912" r="7"/></g><g class="node k-cloud is-built" data-id="gcs" tabindex="0" role="button" aria-label="Cloud Storage: Private screenshots"><rect x="1042" y="890" width="232" height="108" rx="16"/><text class="t" x="1158.0" y="938.0" text-anchor="middle">Cloud Storage</text><text class="s" x="1158.0" y="970.0" text-anchor="middle">Private screenshots</text><circle class="st" cx="1252" cy="912" r="7"/></g><g class="node k-ext is-partial" data-id="vt" tabindex="0" role="button" aria-label="VirusTotal: Known-file lookup"><rect x="1294" y="890" width="232" height="108" rx="16"/><text class="t" x="1410.0" y="938.0" text-anchor="middle">VirusTotal</text><text class="s" x="1410.0" y="970.0" text-anchor="middle">Known-file lookup</text><circle class="st-ring" cx="1504" cy="912" r="7"/><path class="st" d="M1504 905a7 7 0 0 1 0 14z"/></g></svg></div>
+  <aside class="panel" id="panel" aria-live="polite"></aside>
+</div>
+<div class="legend" id="legend"></div>
+<ul class="rules">
+  <li><b>Gemini explains. It never decides.</b><span>Verdicts for links and files come from fixed rules, so they are repeatable and a scam page cannot argue its way out.</span></li>
+  <li><b>Nothing is ever run.</b><span>The sandbox opens pages and reads files on a separate machine with no cloud credentials. A clean result means no known danger signs, not guaranteed safe.</span></li>
+  <li><b>Without the sandbox, it says so.</b><span>The link branch falls back to rules and Web Risk, and files are reported as not checked instead of low risk.</span></li>
+</ul>
+</div>
+<script>
+const NODES = {"input": {"title": "Input", "kind": "code", "status": "built", "detail": "One box that accepts anything a person might be sent: text, a link, a whole message, a screenshot (paste or drop), a recorded voice note or any file.", "where": "app/static/index.html \u00b7 app/static/assets/app.js \u00b7 runCheck()"}, "extract": {"title": "Extract", "kind": "gem", "status": "partial", "detail": "Gemini reads the message, screenshot or voice note and pulls out up to three checkable claims, the links, and the pressure tactics used. Without Gemini, links are found by pattern and tactics by word lists, and the report says what was not read. Tested here with a simulated service; it has not yet been run against the real one.", "where": "app/security/engine.py \u00b7 gemini_extract() \u00b7 app/pipeline.py"}, "research": {"title": "Research claim", "kind": "gem", "status": "partial", "detail": "Gemini searches Google for each claim, preferring fact-checkers, government sources and major newspapers, and keeps the sources it found. Now part of the main check. Tested here with a simulated service; it has not yet been run against the real one.", "where": "app/pipeline.py \u00b7 research()"}, "trace": {"title": "Trace link", "kind": "code", "status": "built", "detail": "A separate browser opens each link (up to three per message) so the person never has to. It records redirects, login and payment forms, download attempts, and takes a screenshot. A site that refuses the sandbox is marked as not seen, never low risk.", "where": "sandbox/worker.py \u00b7 open_page()"}, "inspect": {"title": "Inspect file", "kind": "code", "status": "built", "detail": "The sandbox downloads the file instead of the person's device and reads its structure: real type against its name, disguised programs, macros, scripts, hidden payloads. Links written inside documents are pulled out and sent through the link branch, up to three per file.", "where": "sandbox/filescan.py \u00b7 app/security/orchestrator.py \u00b7 enrich()"}, "judgeclaim": {"title": "Judge claim", "kind": "gem", "status": "partial", "detail": "Gemini gives each claim a verdict (true, false, misleading or unverifiable) using only the research notes, in the person's language. A claim with no sources is never shown as confident. Shown as claim cards with sources in the main report. Tested here with a simulated service; it has not yet been run against the real one.", "where": "app/pipeline.py \u00b7 judge()"}, "judgelink": {"title": "Judge link", "kind": "code", "status": "built", "detail": "Fixed rules add points for each warning sign and Google Web Risk flags known threats. No AI is involved, so the same link always gets the same answer. Hindi and other Indian-language scam words now match, and real bank and government addresses (including .bank.in) are no longer flagged as fakes.", "where": "app/security/signals.py \u00b7 classify()"}, "judgefile": {"title": "Judge file", "kind": "code", "status": "built", "detail": "File findings are scored by the same fixed rules, plus what antivirus engines know about the file and where the links inside it lead. Programs never get a green flag, and a partly read file is never cleared.", "where": "app/security/signals.py \u00b7 inspect_files() \u00b7 inspect_reputation() \u00b7 inspect_embedded()"}, "summary": {"title": "Summary", "kind": "gem", "status": "partial", "detail": "One step that turns every verdict into a single headline, a risk level and what to do next, in the person's language. Gemini is given the level and cannot change it. A rules-built summary is used when Gemini is off, which is what runs in the local demo. Tested here with a simulated service; it has not yet been run against the real one.", "where": "app/security/providers.py \u00b7 gemini_summary() \u00b7 app/security/engine.py \u00b7 default_summary()"}, "response": {"title": "Response", "kind": "code", "status": "built", "detail": "What the person sees: one verdict card, what to do now, the tactics used, claim cards with sources, a section per link and file with its score and download flag, a Listen button, and a saved history.", "where": "app/static/assets/app.js \u00b7 renderCheck()"}, "ui": {"title": "Browser UI", "kind": "code", "status": "built", "detail": "The website: one check box, on phones and computers, in light and dark themes, with voice recording and a spoken verdict.", "where": "app/static/"}, "share": {"title": "Share to LinkShield", "kind": "code", "status": "built", "detail": "LinkShield can be installed, and on Android it then appears in the Share menu of WhatsApp, Gmail and the gallery. Shared text and files are checked straight away. Tested in desktop Chrome; on a phone it needs the site hosted on HTTPS.", "where": "app/static/manifest.webmanifest \u00b7 app/static/sw.js"}, "bots": {"title": "Chat bots", "kind": "code", "status": "partial", "detail": "Forward a suspicious message or file to the bot and it replies with the verdict. Telegram and WhatsApp webhooks are built and verify who is calling. Tested here with a simulated service; it has not yet been run against the real one. WhatsApp needs a business account.", "where": "app/bots.py"}, "guard": {"title": "Auth guard", "kind": "gem", "status": "built", "detail": "Checks who is calling and limits each person to 15 checks every ten minutes, on every endpoint including the old ones. With Firestore on, the limit is shared between servers.", "where": "app/security/identity.py \u00b7 app/security/api.py \u00b7 limit()"}, "session": {"title": "Session store", "kind": "gem", "status": "built", "detail": "Keeps each person's past checks, including claim checks, so reports can be reopened or deleted, and remembers their language.", "where": "app/security/storage.py \u00b7 /api/v1/me"}, "engine": {"title": "Pipeline engine", "kind": "gem", "status": "built", "detail": "Runs the check pipeline shown in the other tab: extract, then claims, links and files side by side, then one summary.", "where": "app/security/engine.py"}, "fbauth": {"title": "Firebase Auth", "kind": "cloud", "status": "partial", "detail": "Google sign-in and guest sign-in (Firebase anonymous) are built; a guest who later signs in with Google keeps their history. Not yet run against a real Firebase project. The local demo uses a random ID kept in the browser.", "where": "app/security/identity.py \u00b7 app/static/assets/app.js \u00b7 connectFirebase()"}, "firestore": {"title": "Firestore", "kind": "cloud", "status": "built", "detail": "Stores each person's history when switched on. In the local demo, history is kept in memory and resets when the server restarts.", "where": "app/security/storage.py"}, "bigquery": {"title": "BigQuery", "kind": "cloud", "status": "built", "detail": "Logs anonymous counts: which claims are checked most, and how many scans land at each risk level. No web addresses or user IDs are stored.", "where": "app/insights.py \u00b7 app/security/telemetry.py"}, "sandbox": {"title": "Sandbox worker", "kind": "gem", "status": "partial", "detail": "A separate service that opens untrusted pages and reads untrusted files. It holds no cloud credentials and never runs a file. It runs in the local Docker setup. The cloud version (its own Cloud Run service, callable only by the API) is written but has not been deployed yet.", "where": "sandbox/ \u00b7 terraform/main.tf \u00b7 deploy.sh"}, "vertex": {"title": "Vertex AI", "kind": "cloud", "status": "built", "detail": "Gemini does the extraction, claim research, claim verdicts and explanations. Built, and switched off in the local demo until a Google Cloud project is connected.", "where": "app/pipeline.py \u00b7 app/security/providers.py"}, "search": {"title": "Google Search", "kind": "cloud", "status": "built", "detail": "Gives Gemini live search results so claim verdicts rest on real sources, which are shown to the person. Now reached from the main check.", "where": "app/pipeline.py \u00b7 research()"}, "webrisk": {"title": "Web Risk API", "kind": "cloud", "status": "built", "detail": "Google's lists of known phishing, malware and unwanted-software addresses. A match is an instant red flag. Switched off in the local demo.", "where": "app/security/providers.py"}, "tts": {"title": "Text-to-Speech", "kind": "cloud", "status": "built", "detail": "Reads the verdict aloud in the person's language. Reached from the Listen button; the device's own voice is used when Google Text-to-Speech is off.", "where": "app/security/api.py \u00b7 /api/v1/tts"}, "gcs": {"title": "Cloud Storage", "kind": "cloud", "status": "built", "detail": "Keeps sandbox screenshots privately so a saved report can show them later. Optional; without it screenshots are shown once and not kept.", "where": "app/security/storage.py"}, "vt": {"title": "VirusTotal", "kind": "ext", "status": "partial", "detail": "Looks up a file's fingerprint to see whether antivirus engines already know it. Three or more engines flagging it makes the file a known threat. Only the fingerprint is sent, never the file. Needs a free API key. Tested here with a simulated service; it has not yet been run against the real one.", "where": "app/security/providers.py \u00b7 virustotal()"}};
+const DOT = {"built": "<svg viewBox=\"0 0 16 16\"><circle class=\"st\" cx=\"8\" cy=\"8\" r=\"6\"/></svg>", "partial": "<svg viewBox=\"0 0 16 16\"><circle class=\"st-ring\" cx=\"8\" cy=\"8\" r=\"6\"/><path class=\"st\" d=\"M8 2a6 6 0 0 1 0 12z\"/></svg>", "todo": "<svg viewBox=\"0 0 16 16\"><circle class=\"st-ring\" cx=\"8\" cy=\"8\" r=\"6\"/></svg>"};
+const KIND = {gem: 'Gemini step', code: 'Plain code', cloud: 'Google Cloud service', ext: 'External service'};
+const KIND_ARCH = {gem: 'Our code', code: 'Entry point', cloud: 'Google Cloud service', ext: 'External service'};
+const STATUS = {built: 'Built', partial: 'Built, not yet run live', todo: 'To build'};
+const LEGEND = {
+  pipeline: [['k-gem', 'Gemini step'], ['k-code', 'Plain code'], ['k-code iso', 'Runs in the sandbox']],
+  architecture: [['k-code', 'Entry point'], ['k-gem', 'Our code'], ['k-gem iso', 'Our code, isolated'], ['k-cloud', 'Google Cloud service'], ['k-ext', 'External service']],
+};
+const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)];
+let tab = 'pipeline', filter = 'all';
+const chosen = {pipeline: 'summary', architecture: 'sandbox'};
+function show(id) {
+  const n = NODES[id]; if (!n) return;
+  chosen[tab] = id;
+  $$('.node').forEach(g => g.classList.toggle('sel', g.dataset.id === id));
+  const kind = (tab === 'architecture' ? KIND_ARCH : KIND)[n.kind];
+  const panel = $('#panel');
+  panel.replaceChildren();
+  const tags = document.createElement('div'); tags.className = 'tags';
+  tags.innerHTML = `<span class="tag">${DOT[n.status]}${STATUS[n.status]}</span><span class="tag k-${n.kind}">${kind}</span>`;
+  const h = document.createElement('h2'); h.textContent = n.title;
+  const p = document.createElement('p'); p.textContent = n.detail;
+  const w = document.createElement('div'); w.className = 'where'; w.innerHTML = '<b>In the project</b>'; w.append(n.where);
+  const hint = document.createElement('p'); hint.className = 'hint'; hint.textContent = 'Tap another box to read about it.';
+  panel.append(tags, h, p, w, hint);
+}
+function applyFilter() {
+  $$('.chip').forEach(c => c.setAttribute('aria-pressed', c.dataset.filter === filter));
+  $$('.node').forEach(g => g.classList.toggle('dim', filter !== 'all' && NODES[g.dataset.id].status !== filter));
+}
+function setTab(next) {
+  tab = next === 'architecture' ? 'architecture' : 'pipeline';
+  $$('.tab').forEach(t => t.setAttribute('aria-selected', t.dataset.tab === tab));
+  $('#view-pipeline').hidden = tab !== 'pipeline'; $('#view-architecture').hidden = tab !== 'architecture';
+  $('#legend').innerHTML = LEGEND[tab].map(([c, l]) => `<span><i class="sw ${c}"></i>${l}</span>`).join('');
+  show(chosen[tab]);
+  try { history.replaceState(null, '', '#' + tab); } catch (e) {}
+}
+document.addEventListener('click', e => {
+  const t = e.target.closest('.tab'); if (t) return setTab(t.dataset.tab);
+  const c = e.target.closest('.chip'); if (c) { filter = c.dataset.filter; return applyFilter(); }
+  const n = e.target.closest('.node'); if (n) show(n.dataset.id);
+});
+document.addEventListener('keydown', e => {
+  const n = e.target.closest && e.target.closest('.node');
+  if (n && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); show(n.dataset.id); }
+});
+setTab(location.hash.slice(1)); applyFilter();
+</script>
+</body>
+</html>

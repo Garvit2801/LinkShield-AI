@@ -1,150 +1,120 @@
-import asyncio, collections, logging, time
+"""LinkShield AI HTTP service: the unified check API, chat bots, the share target and the web app."""
+import logging
+import os
 from pathlib import Path
+from urllib.parse import urlencode
 
 from fastapi import BackgroundTasks, Depends, FastAPI, File, Form, HTTPException, Request, UploadFile
-from fastapi.responses import FileResponse, Response
-from pydantic import BaseModel
+from fastapi.responses import FileResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
 
-from . import auth, insights, pipeline, store
+from .bots import router as bots_router
+from .chat import router as chat_router
+from .security.api import Speech, limit, router as security_router, speak
+from .security.identity import current_user
 
 log = logging.getLogger("linkshield")
-app = FastAPI(title="LinkShield AI")
+app = FastAPI(title="LinkShield AI", version="3.0.0", docs_url="/docs")
+app.include_router(security_router)
+app.include_router(bots_router)
+app.include_router(chat_router)
 STATIC = Path(__file__).parent / "static"
 MAX_BYTES = 8 * 1024 * 1024
-LOCALES = {"hi": "hi-IN", "en": "en-IN", "bn": "bn-IN", "ta": "ta-IN", "te": "te-IN", "mr": "mr-IN",
-           "gu": "gu-IN", "kn": "kn-IN", "ml": "ml-IN", "pa": "pa-IN", "ur": "ur-IN"}
-_hits: dict = collections.defaultdict(collections.deque)
-_tts = None
-
-
-def limited(ip: str, limit: int = 20, window: int = 600) -> bool:
-    now, q = time.time(), _hits[ip]
-    while q and now - q[0] > window:
-        q.popleft()
-    if len(q) >= limit:
-        return True
-    q.append(now)
-    return False
-
-
-def synth(text: str, lang: str) -> bytes:
-    global _tts
-    from google.cloud import texttospeech as tts
-    _tts = _tts or tts.TextToSpeechClient()
-    r = _tts.synthesize_speech(
-        input=tts.SynthesisInput(text=text[:900]),
-        voice=tts.VoiceSelectionParams(language_code=LOCALES.get(lang, "en-IN")),
-        audio_config=tts.AudioConfig(audio_encoding=tts.AudioEncoding.MP3),
-    )
-    return r.audio_content
+app.mount("/assets", StaticFiles(directory=STATIC / "assets"), name="assets")
 
 
 @app.get("/healthz")
 def healthz():
-    return {"ok": True}
+    return {"ok": True, "version": "3.0.0"}
 
 
 @app.get("/")
-def index():
-    return FileResponse(STATIC / "login.html")
+def login():
+    """Sign in with Google, or carry on as a guest. Someone already signed in goes straight to the app."""
+    return FileResponse(STATIC / "login.html", headers={"Cache-Control": "no-cache"})
 
 
 @app.get("/app")
 def checker():
-    return FileResponse(STATIC / "index.html")
+    return FileResponse(STATIC / "index.html", headers={"Cache-Control": "no-cache"})
 
 
 @app.get("/api/config")
 def api_config():
-    return {"authRequired": auth.required(), "googleClientId": auth.client_id()}
+    """What the sign-in page needs (the same names as the original GitHub version)."""
+    from .security.identity import google_client_id
+    return {"authRequired": os.getenv("AUTH_REQUIRED", "0") == "1", "googleClientId": google_client_id()}
 
 
-@app.get("/api/me")
-def api_me(user: dict | None = Depends(auth.current_user)):
-    if not user:
-        raise HTTPException(401, "Not signed in.")
-    return user
+@app.get("/legacy")
+def legacy():
+    """The old fact-checker page. Claim checking now lives in the main check box."""
+    return RedirectResponse("/app#scan", 308)
+
+
+@app.get("/manifest.webmanifest")
+def manifest():
+    return FileResponse(STATIC / "manifest.webmanifest", media_type="application/manifest+json")
+
+
+@app.get("/sw.js")
+def service_worker():
+    # Served from the root so its scope covers the whole app, including the /share target.
+    return FileResponse(STATIC / "sw.js", media_type="text/javascript", headers={"Cache-Control": "no-cache"})
+
+
+@app.post("/share")
+async def share_fallback(request: Request):
+    """Android share target. The service worker normally handles this in the browser so files never
+    need a second upload; this fallback carries shared text across when the worker is not active yet."""
+    try:
+        async with request.form(max_files=1, max_fields=6) as form:
+            text = " ".join(str(form.get(k) or "") for k in ("title", "text", "url") if isinstance(form.get(k), str)).strip()
+    except Exception:
+        text = ""
+    return RedirectResponse("/app?" + urlencode({"text": text[:3000]}) + "#scan", 303)
+
+
+@app.get("/share")
+def share_get(title: str = "", text: str = "", url: str = ""):
+    return RedirectResponse("/app?" + urlencode({"text": " ".join(x for x in (title, text, url) if x)[:3000]}) + "#scan", 303)
 
 
 @app.post("/api/check")
-async def api_check(request: Request, bg: BackgroundTasks, text: str = Form(""), url: str = Form(""),
-                    language: str = Form(""), image: UploadFile | None = File(None),
-                    audio: UploadFile | None = File(None), user: dict | None = Depends(auth.current_user)):
-    ip = (request.headers.get("x-forwarded-for") or (request.client.host if request.client else "?")).split(",")[0].strip()
-    if limited(f"uid:{user['uid']}" if user else ip):
-        raise HTTPException(429, "Too many checks. Try again in a few minutes.")
+async def legacy_check(bg: BackgroundTasks, text: str = Form(""), url: str = Form(""),
+                       language: str = Form(""), image: UploadFile | None = File(None),
+                       audio: UploadFile | None = File(None), uid: str = Depends(current_user)):
+    """The original claim-check API, kept for older clients. New clients use POST /api/v1/checks."""
+    await limit(uid)
+    from . import insights, pipeline
     img = aud = None
     if image:
-        data = await image.read()
-        if len(data) > MAX_BYTES:
-            raise HTTPException(413, "Image is too large (max 8 MB).")
-        img = (data, image.content_type or "image/png")
+        data = await image.read(MAX_BYTES + 1)
+        if len(data) > MAX_BYTES or not (image.content_type or "").startswith("image/"):
+            raise HTTPException(413, "Image must be a supported image under 8 MB.")
+        img = (data, image.content_type)
     if audio:
-        aud = await audio.read()
-        if len(aud) > MAX_BYTES:
-            raise HTTPException(413, "Audio is too large (max 8 MB).")
+        aud = await audio.read(MAX_BYTES + 1)
+        if len(aud) > MAX_BYTES or not (audio.content_type or "").startswith("audio/"):
+            raise HTTPException(413, "Audio must be a supported audio file under 8 MB.")
     try:
         result = await pipeline.check(text=text, url=url, lang=language.strip().lower()[:2], image=img, audio=aud)
-    except ValueError as e:
-        raise HTTPException(400, str(e))
+    except ValueError as exc:
+        raise HTTPException(400, str(exc)) from None
     except Exception:
-        log.exception("check failed")
-        raise HTTPException(502, "The checker is busy. Please try again.")
+        log.exception("legacy checker failed")
+        raise HTTPException(502, "Fact checking unavailable. Verify Vertex AI configuration.") from None
     bg.add_task(insights.log_claims, result["claims"], result["output_language"])
-    if user:
-        preview = text or url or result.get("transcript", "")
-        result["id"] = await asyncio.to_thread(store.save, user["uid"], result, preview)
     return result
 
 
-@app.get("/api/history")
-async def api_history(user: dict | None = Depends(auth.current_user)):
-    if not user:
-        raise HTTPException(401, "Sign in to see your history.")
-    return {"items": await asyncio.to_thread(store.list_items, user["uid"])}
-
-
-@app.get("/api/history/{cid}")
-async def api_history_item(cid: str, user: dict | None = Depends(auth.current_user)):
-    if not user:
-        raise HTTPException(401, "Sign in to see your history.")
-    item = await asyncio.to_thread(store.get, user["uid"], cid)
-    if not item:
-        raise HTTPException(404, "Not found.")
-    return item
-
-
-@app.delete("/api/history/{cid}")
-async def api_history_delete(cid: str, user: dict | None = Depends(auth.current_user)):
-    if not user:
-        raise HTTPException(401, "Sign in first.")
-    await asyncio.to_thread(store.delete, user["uid"], cid)
-    return {"ok": True}
-
-
-@app.delete("/api/history")
-async def api_history_clear(user: dict | None = Depends(auth.current_user)):
-    if not user:
-        raise HTTPException(401, "Sign in first.")
-    await asyncio.to_thread(store.delete_all, user["uid"])
-    return {"ok": True}
-
-
-class TTSReq(BaseModel):
-    text: str
-    language: str = "en"
-
-
 @app.post("/api/tts")
-async def api_tts(req: TTSReq):
-    try:
-        audio = await asyncio.to_thread(synth, req.text, req.language)
-    except Exception:
-        log.exception("tts failed")
-        raise HTTPException(502, "Audio is unavailable right now.")
-    return Response(audio, media_type="audio/mpeg")
+async def api_tts(req: Speech, uid: str = Depends(current_user)):
+    return await speak(req, uid)
 
 
 @app.get("/api/trends")
-async def api_trends():
-    return await asyncio.to_thread(insights.trends)
+async def api_trends(uid: str = Depends(current_user)):
+    await limit(uid, "read")
+    from . import insights
+    return insights.trends()

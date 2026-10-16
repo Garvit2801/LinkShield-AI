@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 1330" width="1500" height="1330" font-family="-apple-system, 'Segoe UI', Roboto, 'Noto Sans', sans-serif">
+<title>LinkShield AI: merged check pipeline</title>
+<defs><marker id="a" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M1 1L9 5L1 9" fill="none" stroke="#888780" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+<rect width="1500" height="1330" fill="#FFFFFF"/>
+<text x="750" y="50" font-size="28" fill="#1F1E1D" text-anchor="middle">LinkShield AI · check pipeline (target)</text>
+<rect x="460" y="90" width="580" height="108" rx="16" fill="#FAF9F5" stroke="#D3D1C7" stroke-width="1.2"/>
+<text x="750.0" y="138.0" text-anchor="middle" font-size="26" fill="#1F1E1D">Input</text>
+<text x="750.0" y="170.0" text-anchor="middle" font-size="20" fill="#5F5E5A">Text, link, image, voice, file</text>
+<path d="M750 198 L750 252" fill="none" stroke="#888780" stroke-width="2.2" stroke-linejoin="round" marker-end="url(#a)"/>
+<rect x="460" y="256" width="580" height="108" rx="16" fill="#EEEDFE" stroke="#534AB7" stroke-width="1.2"/>
+<text x="750.0" y="304.0" text-anchor="middle" font-size="26" fill="#3C3489">Extract</text>
+<text x="750.0" y="336.0" text-anchor="middle" font-size="20" fill="#534AB7">Claims, links, files, tactics</text>
+<path d="M480 364 L480 394 L270.0 394 L270.0 438" fill="none" stroke="#888780" stroke-width="2.2" stroke-linejoin="round" marker-end="url(#a)"/>
+<path d="M750.0 364 L750.0 394 L750.0 394 L750.0 438" fill="none" stroke="#888780" stroke-width="2.2" stroke-linejoin="round" marker-end="url(#a)"/>
+<path d="M1020 364 L1020 394 L1230.0 394 L1230.0 438" fill="none" stroke="#888780" stroke-width="2.2" stroke-linejoin="round" marker-end="url(#a)"/>
+<rect x="60" y="442" width="420" height="108" rx="16" fill="#EEEDFE" stroke="#534AB7" stroke-width="1.2"/>
+<text x="270.0" y="490.0" text-anchor="middle" font-size="26" fill="#3C3489">Research claim</text>
+<text x="270.0" y="522.0" text-anchor="middle" font-size="20" fill="#534AB7">Search grounding, sources</text>
+<rect x="540" y="442" width="420" height="108" rx="16" fill="#FAF9F5" stroke="#5F5E5A" stroke-width="2.4"/>
+<text x="750.0" y="490.0" text-anchor="middle" font-size="26" fill="#1F1E1D">Trace link</text>
+<text x="750.0" y="522.0" text-anchor="middle" font-size="20" fill="#5F5E5A">Sandbox visit, hops, screenshot</text>
+<rect x="1020" y="442" width="420" height="108" rx="16" fill="#FAF9F5" stroke="#5F5E5A" stroke-width="2.4"/>
+<text x="1230.0" y="490.0" text-anchor="middle" font-size="26" fill="#1F1E1D">Inspect file</text>
+<text x="1230.0" y="522.0" text-anchor="middle" font-size="20" fill="#5F5E5A">Sandbox download, real type</text>
+<path d="M270.0 550 L270.0 604" fill="none" stroke="#888780" stroke-width="2.2" stroke-linejoin="round" marker-end="url(#a)"/>
+<path d="M750.0 550 L750.0 604" fill="none" stroke="#888780" stroke-width="2.2" stroke-linejoin="round" marker-end="url(#a)"/>
+<path d="M1230.0 550 L1230.0 604" fill="none" stroke="#888780" stroke-width="2.2" stroke-linejoin="round" marker-end="url(#a)"/>
+<rect x="60" y="608" width="420" height="108" rx="16" fill="#EEEDFE" stroke="#534AB7" stroke-width="1.2"/>
+<text x="270.0" y="656.0" text-anchor="middle" font-size="26" fill="#3C3489">Judge claim</text>
+<text x="270.0" y="688.0" text-anchor="middle" font-size="20" fill="#534AB7">Evidence only, with reasons</text>
+<rect x="540" y="608" width="420" height="108" rx="16" fill="#FAF9F5" stroke="#D3D1C7" stroke-width="1.2"/>
+<text x="750.0" y="656.0" text-anchor="middle" font-size="26" fill="#1F1E1D">Judge link</text>
+<text x="750.0" y="688.0" text-anchor="middle" font-size="20" fill="#5F5E5A">Fixed rules plus Web Risk</text>
+<rect x="1020" y="608" width="420" height="108" rx="16" fill="#FAF9F5" stroke="#D3D1C7" stroke-width="1.2"/>
+<text x="1230.0" y="656.0" text-anchor="middle" font-size="26" fill="#1F1E1D">Judge file</text>
+<text x="1230.0" y="688.0" text-anchor="middle" font-size="20" fill="#5F5E5A">Fixed rules plus known-file lookup</text>
+<text x="990" y="586" font-size="18" fill="#888780" text-anchor="middle">links found inside documents</text>
+<path d="M1020 496 L964 496" fill="none" stroke="#888780" stroke-width="2.2" stroke-linejoin="round" marker-end="url(#a)"/>
+<path d="M270.0 716 L270.0 800 L520 800 L520 846" fill="none" stroke="#888780" stroke-width="2.2" stroke-linejoin="round" marker-end="url(#a)"/>
+<path d="M750.0 716 L750.0 846" fill="none" stroke="#888780" stroke-width="2.2" stroke-linejoin="round" marker-end="url(#a)"/>
+<path d="M1230.0 716 L1230.0 800 L980 800 L980 846" fill="none" stroke="#888780" stroke-width="2.2" stroke-linejoin="round" marker-end="url(#a)"/>
+<rect x="460" y="850" width="580" height="108" rx="16" fill="#EEEDFE" stroke="#534AB7" stroke-width="1.2"/>
+<text x="750.0" y="898.0" text-anchor="middle" font-size="26" fill="#3C3489">Summary</text>
+<text x="750.0" y="930.0" text-anchor="middle" font-size="20" fill="#534AB7">Headline, risk, next action</text>
+<text x="1060" y="896" font-size="19" fill="#534AB7" text-anchor="start">Explains the verdicts.</text>
+<text x="1060" y="922" font-size="19" fill="#534AB7" text-anchor="start">Never changes them.</text>
+<path d="M750 958 L750 1012" fill="none" stroke="#888780" stroke-width="2.2" stroke-linejoin="round" marker-end="url(#a)"/>
+<rect x="360" y="1016" width="780" height="108" rx="16" fill="#FAF9F5" stroke="#D3D1C7" stroke-width="1.2"/>
+<text x="750.0" y="1064.0" text-anchor="middle" font-size="26" fill="#1F1E1D">Response</text>
+<text x="750.0" y="1096.0" text-anchor="middle" font-size="20" fill="#5F5E5A">Cards, link trail, download flag, spoken verdict, history saved</text>
+<rect x="60" y="1190" width="26" height="26" rx="6" fill="#EEEDFE" stroke="#534AB7" stroke-width="1.2"/>
+<text x="100" y="1211" font-size="21" fill="#444441" text-anchor="start">Gemini step</text>
+<rect x="256.5" y="1190" width="26" height="26" rx="6" fill="#FAF9F5" stroke="#D3D1C7" stroke-width="1.2"/>
+<text x="296.5" y="1211" font-size="21" fill="#444441" text-anchor="start">Plain code</text>
+<rect x="441.5" y="1190" width="26" height="26" rx="6" fill="#FAF9F5" stroke="#5F5E5A" stroke-width="2.4"/>
+<text x="481.5" y="1211" font-size="21" fill="#444441" text-anchor="start">Runs in sandbox worker</text>
+<text x="60" y="1262" font-size="19" fill="#5F5E5A" text-anchor="start">Verdicts for links and files come from fixed rules, so they are repeatable and a scam page cannot argue its way out.</text>
+<text x="60" y="1290" font-size="19" fill="#5F5E5A" text-anchor="start">Without the sandbox, the link branch falls back to rules and Web Risk, and files are reported as not checked.</text>
+</svg>

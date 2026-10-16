@@ -1,6 +1,16 @@
 __pycache__/
+*.py[cod]
+.pytest_cache/
 .env
-*.tfstate*
-.terraform/
-evals/results.json
 .venv/
+venv/
+.DS_Store
+terraform/.terraform/
+terraform/*.tfstate*
+terraform/.terraform.lock.hcl
+node_modules/
+evals/results.json
+*.log
+
+# Bot tokens for ./deploy-gcp.sh; never committed or uploaded.
+.env.bots

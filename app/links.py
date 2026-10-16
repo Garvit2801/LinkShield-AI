@@ -88,36 +88,12 @@ def _is_public(host: str) -> bool:
 
 
 async def safe_fetch(url: str, max_hops: int = 5) -> dict:
-    """Follow redirects manually (SSRF-checked each hop), read at most 500 KB, never execute anything."""
-    chain, cur, body, ctype = [url], url, b"", ""
-    async with httpx.AsyncClient(timeout=8, follow_redirects=False, headers=UA) as c:
-        for _ in range(max_hops + 1):
-            u = urlparse(cur)
-            if u.scheme not in ("http", "https") or not u.hostname:
-                raise ValueError("That link is not valid.")
-            if not await asyncio.to_thread(_is_public, u.hostname):
-                raise ValueError("That link cannot be opened.")
-            async with c.stream("GET", cur) as r:
-                if r.is_redirect and r.headers.get("location"):
-                    cur = urljoin(cur, r.headers["location"])
-                    chain.append(cur)
-                    continue
-                ctype = r.headers.get("content-type", "")
-                async for chunk in r.aiter_bytes():
-                    body += chunk
-                    if len(body) > 500_000:
-                        break
-            break
-    title, text, has_pw = "", "", False
-    if "html" in ctype or "text" in ctype:
-        soup = BeautifulSoup(body.decode("utf-8", "replace"), "html.parser")
-        has_pw = bool(soup.find("input", {"type": "password"}))
-        for tag in soup(["script", "style", "nav", "footer"]):
-            tag.decompose()
-        title = soup.title.string.strip() if soup.title and soup.title.string else ""
-        text = " ".join(soup.get_text(" ").split())[:5000]
-    sensitive = has_pw or bool(SENSITIVE_RE.search(text))
-    return {"final_url": cur, "chain": chain, "title": title, "text": text, "sensitive": sensitive}
+    """Disabled in API service: dynamic untrusted browsing belongs in the separate sandbox worker.
+    The old check endpoint still performs Web Risk, heuristics and Gemini-based classification.
+    """
+    from .security.guard import normalize_url
+    normalize_url(url)
+    raise ValueError("Direct website fetching is disabled. Use the sandbox-backed /api/v1/scans endpoint.")
 
 
 _creds = None
