@@ -1,0 +1,33 @@
+{
+  "name": "LinkShield AI",
+  "short_name": "LinkShield",
+  "description": "A second opinion on anything you were sent: links, files, screenshots and forwarded messages, checked before you open them.",
+  "id": "/",
+  "start_url": "/app",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f1faf3",
+  "theme_color": "#1c8054",
+  "icons": [
+    { "src": "/assets/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/assets/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Check something", "url": "/app#scan" },
+    { "name": "History", "url": "/app#history" }
+  ],
+  "share_target": {
+    "action": "/share",
+    "method": "POST",
+    "enctype": "multipart/form-data",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url",
+      "files": [
+        { "name": "file", "accept": ["image/*", "video/*", "audio/*", "text/*", "application/*", "*/*"] }
+      ]
+    }
+  }
+}

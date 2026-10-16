@@ -1,0 +1,56 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "127.0.0.1:8080:8080"
+    environment:
+      DISABLE_GOOGLE: ${DISABLE_GOOGLE:-1}
+      GOOGLE_CLOUD_PROJECT: ${GOOGLE_CLOUD_PROJECT:-}
+      GOOGLE_CLOUD_LOCATION: ${GOOGLE_CLOUD_LOCATION:-us-central1}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash}
+      AUTH_REQUIRED: "0"
+      ENABLE_FIRESTORE: "0"
+      SANDBOX_URL: http://sandbox:8090
+      SANDBOX_TOKEN: ${SANDBOX_TOKEN:-local-demo-change-in-production-very-long-token}
+      VIRUSTOTAL_API_KEY: ${VIRUSTOTAL_API_KEY:-}
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_BOT_USERNAME: ${TELEGRAM_BOT_USERNAME:-}
+      TELEGRAM_WEBHOOK_SECRET: ${TELEGRAM_WEBHOOK_SECRET:-}
+      WHATSAPP_TOKEN: ${WHATSAPP_TOKEN:-}
+      WHATSAPP_APP_SECRET: ${WHATSAPP_APP_SECRET:-}
+      WHATSAPP_VERIFY_TOKEN: ${WHATSAPP_VERIFY_TOKEN:-}
+      WHATSAPP_DISPLAY_NUMBER: ${WHATSAPP_DISPLAY_NUMBER:-}
+    depends_on:
+      sandbox:
+        condition: service_healthy
+    read_only: true
+    tmpfs:
+      - /tmp:size=128m
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+  sandbox:
+    build:
+      context: .
+      dockerfile: sandbox/Dockerfile
+    environment:
+      SANDBOX_TOKEN: ${SANDBOX_TOKEN:-local-demo-change-in-production-very-long-token}
+    shm_size: 256mb
+    read_only: true
+    tmpfs:
+      - /tmp:size=256m
+      - /home/sandboxuser:size=32m
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 180
+    mem_limit: 1g
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8090/healthz',timeout=2)"]
+      interval: 10s
+      timeout: 4s
+      retries: 10

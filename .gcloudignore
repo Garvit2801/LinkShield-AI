@@ -1,0 +1,17 @@
+# Files never uploaded to Cloud Build.
+.gcloudignore
+.git
+.env
+.venv
+venv
+__pycache__
+.pytest_cache
+.DS_Store
+__MACOSX
+tests
+evals
+terraform
+docs
+*.zip
+*.log
+.env.*
